@@ -30,10 +30,8 @@ export interface ToolCallItem {
   type: "tool_call";
   tool_type:
     | "file_search_call"
-    | "web_search_call"
     | "function_call"
-    | "mcp_call"
-    | "code_interpreter_call";
+    | "mcp_call";
   status: "in_progress" | "completed" | "failed" | "searching";
   id: string;
   name?: string | null;
@@ -41,7 +39,6 @@ export interface ToolCallItem {
   arguments?: string;
   parsedArguments?: any;
   output?: string | null;
-  code?: string;
   files?: {
     file_id: string;
     mime_type: string;
@@ -77,7 +74,6 @@ export const handleTurn = async (
   onMessage: (data: any) => void
 ) => {
   try {
-    const { googleIntegrationEnabled } = useToolsStore.getState();
     // Get response from the API (defined in app/api/turn_response/route.ts)
     const response = await fetch("/api/turn_response", {
       method: "POST",
@@ -85,7 +81,6 @@ export const handleTurn = async (
       body: JSON.stringify({
         messages: messages,
         toolsState: toolsState,
-        googleIntegrationEnabled,
       }),
     });
 
@@ -258,16 +253,6 @@ export const processMessages = async () => {
               setChatMessages([...chatMessages]);
               break;
             }
-            case "web_search_call": {
-              chatMessages.push({
-                type: "tool_call",
-                tool_type: "web_search_call",
-                status: item.status || "in_progress",
-                id: item.id,
-              });
-              setChatMessages([...chatMessages]);
-              break;
-            }
             case "file_search_call": {
               chatMessages.push({
                 type: "tool_call",
@@ -289,18 +274,6 @@ export const processMessages = async () => {
                 arguments: item.arguments || "",
                 parsedArguments: item.arguments ? parse(item.arguments) : {},
                 output: null,
-              });
-              setChatMessages([...chatMessages]);
-              break;
-            }
-            case "code_interpreter_call": {
-              chatMessages.push({
-                type: "tool_call",
-                tool_type: "code_interpreter_call",
-                status: item.status || "in_progress",
-                id: item.id,
-                code: "",
-                files: [],
               });
               setChatMessages([...chatMessages]);
               break;
@@ -431,74 +404,11 @@ export const processMessages = async () => {
           break;
         }
 
-        case "response.web_search_call.completed": {
-          const { item_id, output } = data;
-          const toolCallMessage = chatMessages.find((m) => m.id === item_id);
-          if (toolCallMessage && toolCallMessage.type === "tool_call") {
-            toolCallMessage.output = output;
-            toolCallMessage.status = "completed";
-            setChatMessages([...chatMessages]);
-          }
-          break;
-        }
-
         case "response.file_search_call.completed": {
           const { item_id, output } = data;
           const toolCallMessage = chatMessages.find((m) => m.id === item_id);
           if (toolCallMessage && toolCallMessage.type === "tool_call") {
             toolCallMessage.output = output;
-            toolCallMessage.status = "completed";
-            setChatMessages([...chatMessages]);
-          }
-          break;
-        }
-
-        case "response.code_interpreter_call_code.delta": {
-          const { delta, item_id } = data;
-          const toolCallMessage = [...chatMessages]
-            .reverse()
-            .find(
-              (m) =>
-                m.type === "tool_call" &&
-                m.tool_type === "code_interpreter_call" &&
-                m.status !== "completed" &&
-                m.id === item_id
-            ) as ToolCallItem | undefined;
-          // Accumulate deltas to show the code streaming
-          if (toolCallMessage) {
-            toolCallMessage.code = (toolCallMessage.code || "") + delta;
-            setChatMessages([...chatMessages]);
-          }
-          break;
-        }
-
-        case "response.code_interpreter_call_code.done": {
-          const { code, item_id } = data;
-          const toolCallMessage = [...chatMessages]
-            .reverse()
-            .find(
-              (m) =>
-                m.type === "tool_call" &&
-                m.tool_type === "code_interpreter_call" &&
-                m.status !== "completed" &&
-                m.id === item_id
-            ) as ToolCallItem | undefined;
-
-          // Mark the call as completed and set the code
-          if (toolCallMessage) {
-            toolCallMessage.code = code;
-            toolCallMessage.status = "completed";
-            setChatMessages([...chatMessages]);
-          }
-          break;
-        }
-
-        case "response.code_interpreter_call.completed": {
-          const { item_id } = data;
-          const toolCallMessage = chatMessages.find(
-            (m) => m.type === "tool_call" && m.id === item_id
-          ) as ToolCallItem | undefined;
-          if (toolCallMessage) {
             toolCallMessage.status = "completed";
             setChatMessages([...chatMessages]);
           }

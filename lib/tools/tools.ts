@@ -1,53 +1,18 @@
 import { toolsList } from "../../config/tools-list";
-import { ToolsState, WebSearchConfig } from "@/stores/useToolsStore";
-import { getFreshAccessToken } from "@/lib/connectors-auth";
-import { getGoogleConnectorTools } from "./connectors";
-
-interface WebSearchTool extends WebSearchConfig {
-  type: "web_search";
-}
+import { ToolsState } from "@/stores/useToolsStore";
 
 export const getTools = async (toolsState: ToolsState) => {
-  const {
-    webSearchEnabled,
-    fileSearchEnabled,
-    functionsEnabled,
-    codeInterpreterEnabled,
-    vectorStore,
-    webSearchConfig,
-    mcpEnabled,
-    mcpConfig,
-    googleIntegrationEnabled,
-  } = toolsState;
+  const { fileSearchEnabled, functionsEnabled, vectorStore, mcpEnabled, mcpConfig } =
+    toolsState;
 
-  const tools = [];
+  const tools: any[] = [];
 
-  if (webSearchEnabled) {
-    const webSearchTool: WebSearchTool = {
-      type: "web_search",
-    };
-    if (
-      webSearchConfig.user_location &&
-      (webSearchConfig.user_location.country !== "" ||
-        webSearchConfig.user_location.region !== "" ||
-        webSearchConfig.user_location.city !== "")
-    ) {
-      webSearchTool.user_location = webSearchConfig.user_location;
-    }
-
-    tools.push(webSearchTool);
-  }
-
-  if (fileSearchEnabled) {
-    const fileSearchTool = {
+  // Always prefer file search when enabled and a vector store is configured
+  if (fileSearchEnabled && vectorStore?.id) {
+    tools.push({
       type: "file_search",
-      vector_store_ids: [vectorStore?.id],
-    };
-    tools.push(fileSearchTool);
-  }
-
-  if (codeInterpreterEnabled) {
-    tools.push({ type: "code_interpreter", container: { type: "auto" } });
+      vector_store_ids: [vectorStore.id],
+    });
   }
 
   if (functionsEnabled) {
@@ -85,12 +50,6 @@ export const getTools = async (toolsState: ToolsState) => {
         .filter((t) => t);
     }
     tools.push(mcpTool);
-  }
-
-  if (googleIntegrationEnabled) {
-    // Get fresh tokens (refresh if near expiry or missing access token when refresh exists)
-    const { accessToken } = await getFreshAccessToken();
-    tools.push(...getGoogleConnectorTools(accessToken!));
   }
 
   return tools;

@@ -14,15 +14,6 @@ type VectorStore = {
   files?: File[];
 };
 
-export type WebSearchConfig = {
-  user_location?: {
-    type: "approximate";
-    country?: string;
-    city?: string;
-    region?: string;
-  };
-};
-
 export type McpConfig = {
   server_label: string;
   server_url: string;
@@ -31,34 +22,22 @@ export type McpConfig = {
 };
 
 export interface ToolsState {
-  webSearchEnabled: boolean;
   fileSearchEnabled: boolean;
   functionsEnabled: boolean;
-  codeInterpreterEnabled: boolean;
   vectorStore: VectorStore;
-  webSearchConfig: WebSearchConfig;
   mcpEnabled: boolean;
   mcpConfig: McpConfig;
-  googleIntegrationEnabled: boolean;
 }
 
 interface StoreState {
   fileSearchEnabled: boolean;
   //previousFileSearchEnabled: boolean;
   setFileSearchEnabled: (enabled: boolean) => void;
-  webSearchEnabled: boolean;
-  setWebSearchEnabled: (enabled: boolean) => void;
   functionsEnabled: boolean;
   //previousFunctionsEnabled: boolean;
   setFunctionsEnabled: (enabled: boolean) => void;
-  googleIntegrationEnabled: boolean;
-  setGoogleIntegrationEnabled: (enabled: boolean) => void;
-  codeInterpreterEnabled: boolean;
-  setCodeInterpreterEnabled: (enabled: boolean) => void;
   vectorStore: VectorStore | null;
   setVectorStore: (store: VectorStore) => void;
-  webSearchConfig: WebSearchConfig;
-  setWebSearchConfig: (config: WebSearchConfig) => void;
   mcpEnabled: boolean;
   setMcpEnabled: (enabled: boolean) => void;
   mcpConfig: McpConfig;
@@ -69,48 +48,27 @@ const useToolsStore = create<StoreState>()(
   persist(
     (set) => ({
       vectorStore: defaultVectorStore.id !== "" ? defaultVectorStore : null,
-      webSearchConfig: {
-        user_location: {
-          type: "approximate",
-          country: "",
-          city: "",
-          region: "",
-        },
-      },
       mcpConfig: {
         server_label: "",
         server_url: "",
         allowed_tools: "",
         skip_approval: true,
       },
-      fileSearchEnabled: false,
+      fileSearchEnabled: true,
       previousFileSearchEnabled: false,
       setFileSearchEnabled: (enabled) => {
         set({ fileSearchEnabled: enabled });
-      },
-      webSearchEnabled: false,
-      setWebSearchEnabled: (enabled) => {
-        set({ webSearchEnabled: enabled });
       },
       functionsEnabled: true,
       previousFunctionsEnabled: true,
       setFunctionsEnabled: (enabled) => {
         set({ functionsEnabled: enabled });
       },
-      googleIntegrationEnabled: false,
-      setGoogleIntegrationEnabled: (enabled) => {
-        set({ googleIntegrationEnabled: enabled });
-      },
       mcpEnabled: false,
       setMcpEnabled: (enabled) => {
         set({ mcpEnabled: enabled });
       },
-      codeInterpreterEnabled: false,
-      setCodeInterpreterEnabled: (enabled) => {
-        set({ codeInterpreterEnabled: enabled });
-      },
       setVectorStore: (store) => set({ vectorStore: store }),
-      setWebSearchConfig: (config) => set({ webSearchConfig: config }),
       setMcpConfig: (config) => set({ mcpConfig: config }),
     }),
     {
