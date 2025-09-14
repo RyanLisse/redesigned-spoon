@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Image from "next/image";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -14,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Responses starter app",
-  description: "Starter app for the OpenAI Responses API",
+  title: "RoboRail Assistant",
+  description: "Conversational assistant with file-grounded answers",
   icons: {
     icon: "/openai_logo.svg",
   },
@@ -27,12 +28,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="flex h-screen bg-gray-200 w-full flex-col  text-stone-900">
-          <main>{children}</main>
+    <html lang="en" className="dark">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className="flex h-screen w-full flex-col bg-background text-foreground">
+          <header className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <Image src="/hgg-logo.png" alt="HGG logo" width={24} height={24} />
+              <span className="font-medium">RoboRail Assistant</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              {/* Right-side actions can be added here later */}
+            </div>
+          </header>
+          <main className="flex-1">{children}</main>
         </div>
       </body>
     </html>
