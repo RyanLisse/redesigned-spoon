@@ -1,9 +1,13 @@
 "use client";
 
-import React from "react";
+import type React from "react";
 import { Switch } from "./ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { TooltipProvider } from "./ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 export default function PanelConfig({
   title,
@@ -25,12 +29,12 @@ export default function PanelConfig({
   };
 
   return (
-    <div className="space-y-4 mb-6">
-      <div className="flex justify-between items-center">
+    <div className="mb-6 space-y-4">
+      <div className="flex items-center justify-between">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <h1 className="text-black font-medium">{title}</h1>
+              <h1 className="font-medium text-black">{title}</h1>
             </TooltipTrigger>
             <TooltipContent>
               <p>{tooltip}</p>
@@ -38,10 +42,10 @@ export default function PanelConfig({
           </Tooltip>
         </TooltipProvider>
         <Switch
-          id={title}
           checked={enabled}
-          onCheckedChange={handleToggle}
           disabled={disabled}
+          id={title}
+          onCheckedChange={handleToggle}
         />
       </div>
       <div className="mt-1">{children}</div>

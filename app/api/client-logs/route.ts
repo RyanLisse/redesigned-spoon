@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import logger from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     logger.error({ err }, "client-logs route error");
-    return NextResponse.json({ ok: false, error: "invalid payload" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: "invalid payload" },
+      { status: 400 }
+    );
   }
 }
-

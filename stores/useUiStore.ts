@@ -10,11 +10,10 @@ interface UiState {
 }
 
 const useUiStore = create<UiState>((set) => ({
-  modelId: "gpt-4.1",
+  modelId: "gpt-5-mini",
   reasoningEffort: "medium",
   setModelId: (id) => set({ modelId: id }),
   setReasoningEffort: (effort) => set({ reasoningEffort: effort }),
 }));
 
 export default useUiStore;
-

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import type { McpApprovalRequestItem } from "@/lib/assistant";
 import { Button } from "./ui/button";
-import { McpApprovalRequestItem } from "@/lib/assistant";
 
 interface Props {
   item: McpApprovalRequestItem;
@@ -19,21 +19,21 @@ export default function McpApproval({ item, onRespond }: Props) {
   return (
     <div className="flex flex-col">
       <div className="flex">
-        <div className="mr-4 rounded-[16px] p-4 md:mr-24 text-black bg-gray-100 font-light">
+        <div className="mr-4 rounded-[16px] bg-gray-100 p-4 font-light text-black md:mr-24">
           <div className="mb-2 text-sm">
             Request to execute tool{" "}
             <span className="font-medium">{item.name}</span> on server{" "}
             <span className="font-medium">{item.server_label}</span>.
           </div>
           <div className="flex gap-2">
-            <Button size="sm" disabled={disabled} onClick={() => handle(true)}>
+            <Button disabled={disabled} onClick={() => handle(true)} size="sm">
               Approve
             </Button>
             <Button
-              size="sm"
+              className="bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-800"
               disabled={disabled}
               onClick={() => handle(false)}
-              className="bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-800"
+              size="sm"
             >
               Decline
             </Button>

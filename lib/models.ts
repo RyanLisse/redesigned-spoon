@@ -15,4 +15,3 @@ export const MODELS: ModelInfo[] = [
 
 export const isReasoningModel = (id: string) =>
   MODELS.find((m) => m.id === id)?.reasoning === true;
-

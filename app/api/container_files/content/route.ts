@@ -21,7 +21,8 @@ export async function GET(request: Request) {
     const blob = await res.blob();
     return new Response(blob, {
       headers: {
-        "Content-Type": res.headers.get("Content-Type") || "application/octet-stream",
+        "Content-Type":
+          res.headers.get("Content-Type") || "application/octet-stream",
         "Content-Disposition": `attachment; filename=${filename ?? fileId}`,
       },
     });

@@ -1,9 +1,14 @@
+import type { ToolsState } from "@/stores/useToolsStore";
 import { toolsList } from "../../config/tools-list";
-import { ToolsState } from "@/stores/useToolsStore";
 
 export const getTools = async (toolsState: ToolsState) => {
-  const { fileSearchEnabled, functionsEnabled, vectorStore, mcpEnabled, mcpConfig } =
-    toolsState;
+  const {
+    fileSearchEnabled,
+    functionsEnabled,
+    vectorStore,
+    mcpEnabled,
+    mcpConfig,
+  } = toolsState;
 
   const tools: any[] = [];
 

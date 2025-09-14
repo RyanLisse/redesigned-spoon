@@ -1,5 +1,7 @@
 "use client";
-import React, { useCallback, useState, FormEvent } from "react";
+import { CircleX, FilePlus2, Plus, Trash2 } from "lucide-react";
+import React, { type FormEvent, useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { FilePlus2, Plus, Trash2, CircleX } from "lucide-react";
-import { useDropzone } from "react-dropzone";
 import { Input } from "./ui/input";
 import {
   Tooltip,
@@ -172,14 +172,14 @@ export default function FileUpload({
   };
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
       <DialogTrigger asChild>
-        <div className="bg-white rounded-full flex items-center justify-center py-1 px-3 border border-zinc-200 gap-1 font-medium text-sm cursor-pointer hover:bg-zinc-50 transition-all">
+        <div className="flex cursor-pointer items-center justify-center gap-1 rounded-full border border-zinc-200 bg-white px-3 py-1 font-medium text-sm transition-all hover:bg-zinc-50">
           <Plus size={16} />
           Upload
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] md:max-w-[600px] max-h-[80vh] overflow-y-scrollfrtdtd">
+      <DialogContent className="overflow-y-scrollfrtdtd max-h-[80vh] sm:max-w-[500px] md:max-w-[600px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add files to your vector store</DialogTitle>
@@ -187,36 +187,36 @@ export default function FileUpload({
           <div className="my-6">
             {!vectorStoreId || vectorStoreId === "" ? (
               <div className="flex items-start gap-2 text-sm">
-                <label className="font-medium w-72" htmlFor="storeName">
+                <label className="w-72 font-medium" htmlFor="storeName">
                   New vector store name
                   <div className="text-xs text-zinc-400">
                     A new store will be created when you upload a file.
                   </div>
                 </label>
                 <Input
+                  className="rounded border p-2"
                   id="storeName"
+                  onChange={(e) => setNewStoreName(e.target.value)}
                   type="text"
                   value={newStoreName}
-                  onChange={(e) => setNewStoreName(e.target.value)}
-                  className="border rounded p-2"
                 />
               </div>
             ) : (
-              <div className="flex items-center justify-between flex-1 min-w-0">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="text-sm font-medium w-24 text-nowrap">
+              <div className="flex min-w-0 flex-1 items-center justify-between">
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="w-24 text-nowrap font-medium text-sm">
                     Vector store
                   </div>
-                  <div className="text-zinc-400  text-xs font-mono flex-1 text-ellipsis truncate">
+                  <div className="flex-1 truncate text-ellipsis font-mono text-xs text-zinc-400">
                     {vectorStoreId}
                   </div>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <CircleX
+                          className="mt-0.5 mb-0.5 shrink-0 cursor-pointer text-zinc-400 transition-all hover:text-zinc-700"
                           onClick={() => onUnlinkStore()}
                           size={16}
-                          className="cursor-pointer text-zinc-400 mb-0.5 shrink-0 mt-0.5 hover:text-zinc-700 transition-all"
                         />
                       </TooltipTrigger>
                       <TooltipContent>
@@ -228,17 +228,17 @@ export default function FileUpload({
               </div>
             )}
           </div>
-          <div className="flex justify-center items-center mb-4 h-[200px]">
+          <div className="mb-4 flex h-[200px] items-center justify-center">
             {file ? (
               <div className="flex flex-col items-start">
                 <div className="text-zinc-400">Loaded file</div>
-                <div className="flex items-center mt-2">
-                  <div className="text-zinc-900 mr-2">{file.name}</div>
+                <div className="mt-2 flex items-center">
+                  <div className="mr-2 text-zinc-900">{file.name}</div>
 
                   <Trash2
+                    className="cursor-pointer text-zinc-900"
                     onClick={removeFile}
                     size={16}
-                    className="cursor-pointer text-zinc-900"
                   />
                 </div>
               </div>
@@ -246,7 +246,7 @@ export default function FileUpload({
               <div className="flex flex-col items-center">
                 <div
                   {...getRootProps()}
-                  className="p-6 flex items-center justify-center relative focus-visible:outline-0"
+                  className="relative flex items-center justify-center p-6 focus-visible:outline-0"
                 >
                   <input {...getInputProps()} />
                   <div
@@ -255,8 +255,8 @@ export default function FileUpload({
                         ? "h-56 w-56 bg-zinc-100"
                         : "h-0 w-0 bg-transparent"
                     }`}
-                  ></div>
-                  <div className="flex flex-col items-center text-center z-10 cursor-pointer">
+                  />
+                  <div className="z-10 flex cursor-pointer flex-col items-center text-center">
                     <FilePlus2 className="mb-4 size-8 text-zinc-700" />
                     <div className="text-zinc-700">Upload a file</div>
                   </div>
@@ -265,7 +265,7 @@ export default function FileUpload({
             )}
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={uploading}>
+            <Button disabled={uploading} type="submit">
               {uploading ? "Uploading..." : "Add"}
             </Button>
           </DialogFooter>

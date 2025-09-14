@@ -1,10 +1,7 @@
 "use client"; // Only needed if using Next.js 13 App Router
 
-import React from "react";
-
 import { Check, ChevronsUpDown } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -19,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export const ISO_3166_ALPHA_2_CODES = new Set([
   "AF",
@@ -288,13 +286,13 @@ export default function CountrySelector({
 
   return (
     <div className="flex-1">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
             aria-expanded={open}
             className="w-full justify-between text-muted-foreground"
+            role="combobox"
+            variant="outline"
           >
             {value
               ? countries.find((country) => country.value === value)?.label
@@ -311,11 +309,11 @@ export default function CountrySelector({
                 {countries.map((country) => (
                   <CommandItem
                     key={country.value}
-                    value={country.value}
                     onSelect={(currentValue) => {
                       onChange(currentValue === value ? "" : currentValue);
                       setOpen(false);
                     }}
+                    value={country.value}
                   >
                     <Check
                       className={cn(

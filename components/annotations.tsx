@@ -1,10 +1,7 @@
 import { ExternalLinkIcon } from "lucide-react";
 
 export type Annotation = {
-  type:
-    | "file_citation"
-    | "url_citation"
-    | "container_file_citation";
+  type: "file_citation" | "url_citation" | "container_file_citation";
   fileId?: string;
   containerId?: string;
   url?: string;
@@ -23,26 +20,28 @@ const AnnotationPill = ({ annotation }: { annotation: Annotation }) => {
     case "url_citation":
       return (
         <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href={annotation.url}
           className={className}
+          href={annotation.url}
+          rel="noopener noreferrer"
+          target="_blank"
         >
-          <div className=" flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <div className="truncate">{annotation.title}</div>
-            <ExternalLinkIcon size={12} className="shrink-0" />
+            <ExternalLinkIcon className="shrink-0" size={12} />
           </div>
         </a>
       );
     case "container_file_citation":
       return (
         <a
-          href={`/api/container_files/content?file_id=${annotation.fileId}${annotation.containerId ? `&container_id=${annotation.containerId}` : ""}${annotation.filename ? `&filename=${encodeURIComponent(annotation.filename)}` : ""}`}
-          download
           className={`${className} flex items-center gap-1`}
+          download
+          href={`/api/container_files/content?file_id=${annotation.fileId}${annotation.containerId ? `&container_id=${annotation.containerId}` : ""}${annotation.filename ? `&filename=${encodeURIComponent(annotation.filename)}` : ""}`}
         >
-          <span className="truncate">{annotation.filename || annotation.fileId}</span>
-          <ExternalLinkIcon size={12} className="shrink-0" />
+          <span className="truncate">
+            {annotation.filename || annotation.fileId}
+          </span>
+          <ExternalLinkIcon className="shrink-0" size={12} />
         </a>
       );
   }
@@ -57,8 +56,10 @@ const Annotations = ({ annotations }: { annotations: Annotation[] }) => {
             a.type === annotation.type &&
             ((annotation.type === "file_citation" &&
               a.fileId === annotation.fileId) ||
-              (annotation.type === "url_citation" && a.url === annotation.url) ||
-              (annotation.type === "container_file_citation" && a.fileId === annotation.fileId))
+              (annotation.type === "url_citation" &&
+                a.url === annotation.url) ||
+              (annotation.type === "container_file_citation" &&
+                a.fileId === annotation.fileId))
         )
       ) {
         acc.push(annotation);
@@ -69,9 +70,9 @@ const Annotations = ({ annotations }: { annotations: Annotation[] }) => {
   );
 
   return (
-    <div className="flex max-w-full mr-28 ml-4 overflow-x-scroll gap-2 mb-2">
+    <div className="mr-28 mb-2 ml-4 flex max-w-full gap-2 overflow-x-scroll">
       {uniqueAnnotations.map((annotation: Annotation, index: number) => (
-        <AnnotationPill key={index} annotation={annotation} />
+        <AnnotationPill annotation={annotation} key={index} />
       ))}
     </div>
   );

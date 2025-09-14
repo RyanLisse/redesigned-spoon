@@ -1,9 +1,9 @@
 import { parse } from "partial-json";
+import type { Annotation } from "@/components/annotations";
+import type { functionsMap } from "@/config/functions";
 import { handleTool } from "@/lib/tools/tools-handling";
 import useConversationStore from "@/stores/useConversationStore";
-import useToolsStore, { ToolsState } from "@/stores/useToolsStore";
-import { Annotation } from "@/components/annotations";
-import { functionsMap } from "@/config/functions";
+import useToolsStore, { type ToolsState } from "@/stores/useToolsStore";
 import useUiStore from "@/stores/useUiStore";
 
 const normalizeAnnotation = (annotation: any): Annotation => ({
@@ -31,10 +31,7 @@ export interface MessageItem {
 // Custom items to display in chat
 export interface ToolCallItem {
   type: "tool_call";
-  tool_type:
-    | "file_search_call"
-    | "function_call"
-    | "mcp_call";
+  tool_type: "file_search_call" | "function_call" | "mcp_call";
   status: "in_progress" | "completed" | "failed" | "searching";
   id: string;
   name?: string | null;
@@ -83,8 +80,8 @@ export const handleTurn = async (
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: messages,
-        toolsState: toolsState,
+        messages,
+        toolsState,
         modelId,
         reasoningEffort,
       }),
@@ -189,7 +186,10 @@ export const processMessages = async () => {
                   type: "output_text",
                   text: assistantMessageContent,
                   ...(reasoningContent
-                    ? { reasoning: reasoningContent, reasoning_streaming: reasoningStreaming }
+                    ? {
+                        reasoning: reasoningContent,
+                        reasoning_streaming: reasoningStreaming,
+                      }
                     : {}),
                 },
               ],
@@ -260,7 +260,7 @@ export const processMessages = async () => {
         case "response.output_item.added": {
           const { item } = data || {};
           // New item coming in
-          if (!item || !item.type) {
+          if (!(item && item.type)) {
             break;
           }
           setAssistantLoading(false);

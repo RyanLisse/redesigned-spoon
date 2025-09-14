@@ -1,12 +1,13 @@
+import OpenAI from "openai";
 import { getDeveloperPrompt, MODEL } from "@/config/constants";
 import logger from "@/lib/logger";
 import { isReasoningModel } from "@/lib/models";
 import { getTools } from "@/lib/tools/tools";
-import OpenAI from "openai";
 
 export async function POST(request: Request) {
   try {
-    const { messages, toolsState, modelId, reasoningEffort } = await request.json();
+    const { messages, toolsState, modelId, reasoningEffort } =
+      await request.json();
 
     const tools = await getTools(toolsState);
     logger.info({ tools }, "Tools prepared");
@@ -25,7 +26,9 @@ export async function POST(request: Request) {
       stream: true,
       parallel_tool_calls: false,
       ...(supportsReasoning && reasoningEffort
-        ? { reasoning: { effort: reasoningEffort as "low" | "medium" | "high" } }
+        ? {
+            reasoning: { effort: reasoningEffort as "low" | "medium" | "high" },
+          }
         : {}),
     });
 

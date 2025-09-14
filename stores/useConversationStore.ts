@@ -1,7 +1,7 @@
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { create } from "zustand";
-import { Item } from "@/lib/assistant";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { INITIAL_MESSAGE } from "@/config/constants";
+import type { Item } from "@/lib/assistant";
 
 interface ConversationState {
   // Items displayed in the chat

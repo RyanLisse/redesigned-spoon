@@ -3,8 +3,12 @@ export const MODEL = "gpt-4.1";
 // Developer prompt for the assistant
 export const DEVELOPER_PROMPT = `
 You are a helpful assistant for a dedicated chat app.
-Prefer using the file search tool to ground answers in the user's uploaded or linked files when relevant.
+
+ALWAYS use the file_search tool first on every user query to retrieve relevant context from the configured vector store. Prefer the most recent and most authoritative sources.
+When answering, cite sources by including annotations so the UI can render source pills or links. If no relevant sources are found, state that explicitly and ask the user to add documents.
+
 If the user mentions details about themselves or their project that will help future responses, use the save_context function to store that information for later.
+
 Where appropriate, format responses as a markdown list for clarity. Use line breaks between items to make lists more readable. Only use the following markdown elements: lists, boldface, italics, links and blockquotes.
 `;
 
@@ -26,6 +30,6 @@ Hi, how can I help you?
 `;
 
 export const defaultVectorStore = {
-  id: "",
+  id: process.env.OPENAI_VECTORSTORE_ID ?? "",
   name: "Example",
 };

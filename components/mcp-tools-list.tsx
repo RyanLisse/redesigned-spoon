@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import { McpListToolsItem } from "@/lib/assistant";
 import { ChevronRight, Code } from "lucide-react";
+import React, { useState } from "react";
+import type { McpListToolsItem } from "@/lib/assistant";
 
 interface Props {
   item: McpListToolsItem;
@@ -11,10 +11,10 @@ export default function McpToolsList({ item }: Props) {
   function ToolDescription({ description }: { description: string }) {
     const [expanded, setExpanded] = useState(false);
     return (
-      <div className="flex items-start mt-1 gap-2">
+      <div className="mt-1 flex items-start gap-2">
         <div
           className={
-            `text-zinc-500 text-xs whitespace-pre-wrap transition-all duration-200 ` +
+            "whitespace-pre-wrap text-xs text-zinc-500 transition-all duration-200" +
             (expanded ? "line-clamp-none" : "line-clamp-1 overflow-hidden")
           }
           style={{ maxWidth: 400 }}
@@ -22,14 +22,14 @@ export default function McpToolsList({ item }: Props) {
           {description}
         </div>
         <div
-          className="flex items-center text-xs text-gray-500 focus:outline-hidden select-none cursor-pointer"
+          className="flex cursor-pointer select-none items-center text-gray-500 text-xs focus:outline-hidden"
           onClick={() => setExpanded((prev) => !prev)}
         >
           <ChevronRight
-            className={`h-4 w-4 transition-transform duration-200 mr-1 ${
+            aria-hidden="true"
+            className={`mr-1 h-4 w-4 transition-transform duration-200 ${
               expanded ? "rotate-90" : "rotate-0"
             }`}
-            aria-hidden="true"
           />
         </div>
       </div>
@@ -39,16 +39,16 @@ export default function McpToolsList({ item }: Props) {
   return (
     <div className="flex flex-col">
       <div className="flex">
-        <div className="mr-4 rounded-[16px] px-4 py-2 md:mr-24 text-black bg-white font-light">
-          <div className="text-sm mb-2 text-blue-500">
+        <div className="mr-4 rounded-[16px] bg-white px-4 py-2 font-light text-black md:mr-24">
+          <div className="mb-2 text-blue-500 text-sm">
             Server <span className="font-semibold">{item.server_label}</span>{" "}
             tools list
           </div>
-          <div className="space-y-2 text-sm mt-3">
+          <div className="mt-3 space-y-2 text-sm">
             {item.tools.map((tool) => (
               <div key={tool.name}>
-                <div className="flex gap-2 items-center text-xs">
-                  <div className="bg-blue-100 text-blue-500 rounded-md p-1">
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="rounded-md bg-blue-100 p-1 text-blue-500">
                     <Code size={12} />
                   </div>
                   <div className="font-mono">{tool.name}</div>

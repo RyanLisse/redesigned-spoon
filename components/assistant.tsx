@@ -1,12 +1,16 @@
 "use client";
 import React from "react";
-import Chat from "./chat";
+import { type Item, processMessages } from "@/lib/assistant";
 import useConversationStore from "@/stores/useConversationStore";
-import { Item, processMessages } from "@/lib/assistant";
+import Chat from "./chat";
 
 export default function Assistant() {
-  const { chatMessages, addConversationItem, addChatMessage, setAssistantLoading } =
-    useConversationStore();
+  const {
+    chatMessages,
+    addConversationItem,
+    addChatMessage,
+    setAssistantLoading,
+  } = useConversationStore();
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -31,10 +35,7 @@ export default function Assistant() {
     }
   };
 
-  const handleApprovalResponse = async (
-    approve: boolean,
-    id: string
-  ) => {
+  const handleApprovalResponse = async (approve: boolean, id: string) => {
     const approvalItem = {
       type: "mcp_approval_response",
       approve,
@@ -49,11 +50,11 @@ export default function Assistant() {
   };
 
   return (
-    <div className="h-full p-4 w-full bg-white">
+    <div className="h-full w-full p-4">
       <Chat
         items={chatMessages}
-        onSendMessage={handleSendMessage}
         onApprovalResponse={handleApprovalResponse}
+        onSendMessage={handleSendMessage}
       />
     </div>
   );

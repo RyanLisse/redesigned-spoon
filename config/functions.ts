@@ -17,11 +17,11 @@ export const get_weather = async ({
 };
 
 export const get_joke = async () => {
-  const res = await fetch(`/api/functions/get_joke`).then((res) => res.json());
+  const res = await fetch("/api/functions/get_joke").then((res) => res.json());
   return res;
 };
 
 export const functionsMap = {
-  get_weather: get_weather,
-  get_joke: get_joke,
+  get_weather,
+  get_joke,
 };

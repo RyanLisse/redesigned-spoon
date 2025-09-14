@@ -1,8 +1,12 @@
-import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning";
-import { Response } from "@/components/ai-elements/response";
-import type { MessageItem } from "@/lib/assistant";
 import Image from "next/image";
 import type React from "react";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
+import { Response } from "@/components/ai-elements/response";
+import type { MessageItem } from "@/lib/assistant";
 
 // Hoisted regex to avoid recreating it on each render
 const IMAGE_EXT_REGEX = /\.(png|jpg|jpeg|gif|webp|svg)$/i;
@@ -31,7 +35,11 @@ const Message: React.FC<MessageProps> = ({ message }) => {
             <div className="mr-4 rounded-[16px] bg-white px-4 py-2 font-light text-black md:mr-24">
               <div>
                 {message.content[0].reasoning ? (
-                  <Reasoning isStreaming={Boolean(message.content[0].reasoning_streaming)}>
+                  <Reasoning
+                    isStreaming={Boolean(
+                      message.content[0].reasoning_streaming
+                    )}
+                  >
                     <ReasoningTrigger />
                     <ReasoningContent>
                       {message.content[0].reasoning as string}
@@ -39,19 +47,24 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                   </Reasoning>
                 ) : null}
                 <Response>{message.content[0].text as string}</Response>
-                {message.content[0].annotations?.filter(
-                  (a) =>
-                    a.type === "container_file_citation" &&
-                    a.filename &&
-                    IMAGE_EXT_REGEX.test(a.filename)
-                )?.map((a, i) => (
-                  <Image
-                    alt={a.filename || ""}
-                    className="mt-2 max-w-full"
-                    key={a.fileId || `${a.containerId ?? "container"}-${a.filename ?? i}`}
-                    src={`/api/container_files/content?file_id=${a.fileId}${a.containerId ? `&container_id=${a.containerId}` : ""}${a.filename ? `&filename=${encodeURIComponent(a.filename)}` : ""}`}
-                  />
-                ))}
+                {message.content[0].annotations
+                  ?.filter(
+                    (a) =>
+                      a.type === "container_file_citation" &&
+                      a.filename &&
+                      IMAGE_EXT_REGEX.test(a.filename)
+                  )
+                  ?.map((a, i) => (
+                    <Image
+                      alt={a.filename || ""}
+                      className="mt-2 max-w-full"
+                      key={
+                        a.fileId ||
+                        `${a.containerId ?? "container"}-${a.filename ?? i}`
+                      }
+                      src={`/api/container_files/content?file_id=${a.fileId}${a.containerId ? `&container_id=${a.containerId}` : ""}${a.filename ? `&filename=${encodeURIComponent(a.filename)}` : ""}`}
+                    />
+                  ))}
               </div>
             </div>
           </div>

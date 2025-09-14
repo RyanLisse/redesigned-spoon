@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
 import { randomBytes } from "crypto";
+import { cookies } from "next/headers";
 
 const SESSION_COOKIE = "responses_starter_session_id";
 
@@ -43,7 +43,7 @@ export function saveTokenSet(sessionId: string, tokenSet: OAuthTokens) {
 }
 
 export function getTokenSet(sessionId?: string): OAuthTokens | undefined {
-  if (!sessionId) return undefined;
+  if (!sessionId) return;
   return sessionStore.get(sessionId);
 }
 

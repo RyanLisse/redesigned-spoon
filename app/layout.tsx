@@ -1,7 +1,7 @@
+import BrowserEchoScript from "@browser-echo/next/BrowserEchoScript";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Image from "next/image";
-import BrowserEchoScript from "@browser-echo/next/BrowserEchoScript";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -29,24 +29,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html className="dark" lang="en">
       <head>
         {process.env.NODE_ENV === "development" && (
           <BrowserEchoScript route="/api/client-logs" />
         )}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0d0f12] text-foreground`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-[#1a1d21] text-white antialiased`}
+      >
         <div className="flex h-screen w-full flex-col">
-          <header className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <div className="flex items-center gap-2">
-              <Image src="/hgg-logo.png" alt="HGG logo" width={24} height={24} />
-              <span className="font-medium">RoboRail Assistant</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {/* Right-side actions can be added here later */}
+          <header className="flex items-center border-gray-800/50 border-b px-6 py-4">
+            <div className="flex items-center gap-3">
+              <Image
+                alt="HGG logo"
+                className="rounded"
+                height={40}
+                src="/HGG_logo-primair_RGB .webp"
+                width={40}
+              />
+              <span className="font-medium text-lg text-white">
+                RoboRail Assistant
+              </span>
             </div>
           </header>
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 overflow-hidden">{children}</main>
         </div>
       </body>
     </html>

@@ -1,12 +1,20 @@
 import React from "react";
-import { ToolCallItem } from "@/lib/assistant";
-import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
+import type { ToolCallItem } from "@/lib/assistant";
 
 interface ToolCallProps {
   toolCall: ToolCallItem;
 }
 
-function mapState(status: ToolCallItem["status"]): "input-streaming" | "input-available" | "output-available" | "output-error" {
+function mapState(
+  status: ToolCallItem["status"]
+): "input-streaming" | "input-available" | "output-available" | "output-error" {
   switch (status) {
     case "in_progress":
     case "searching":
@@ -37,7 +45,12 @@ export default function ToolCall({ toolCall }: ToolCallProps) {
           {toolCall.parsedArguments ? (
             <ToolInput input={toolCall.parsedArguments} />
           ) : null}
-          <ToolOutput errorText={state === "output-error" ? toolCall.output ?? null : null} output={toolCall.output ?? null} />
+          <ToolOutput
+            errorText={
+              state === "output-error" ? (toolCall.output ?? null) : null
+            }
+            output={toolCall.output ?? null}
+          />
         </ToolContent>
       </Tool>
     </div>
