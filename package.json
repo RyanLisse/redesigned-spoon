@@ -72,5 +72,7 @@
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "pnpm dlx ultracite fix"
     ]
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0"
   }
 }

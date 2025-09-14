@@ -1,4 +1,6 @@
 import { getDeveloperPrompt, MODEL } from "@/config/constants";
+import logger from "@/lib/logger";
+import { isReasoningModel } from "@/lib/models";
 import { getTools } from "@/lib/tools/tools";
 import OpenAI from "openai";
 
@@ -7,21 +9,22 @@ export async function POST(request: Request) {
     const { messages, toolsState, modelId, reasoningEffort } = await request.json();
 
     const tools = await getTools(toolsState);
-
-    console.log("Tools:", tools);
-
-    console.log("Received messages:", messages);
+    logger.info({ tools }, "Tools prepared");
+    logger.info({ messages }, "Turn request received");
 
     const openai = new OpenAI();
 
+    const selectedModel = modelId || MODEL;
+    const supportsReasoning = isReasoningModel(selectedModel);
+
     const events = await openai.responses.create({
-      model: modelId || MODEL,
+      model: selectedModel,
       input: messages,
       instructions: getDeveloperPrompt(),
       tools,
       stream: true,
       parallel_tool_calls: false,
-      ...(reasoningEffort
+      ...(supportsReasoning && reasoningEffort
         ? { reasoning: { effort: reasoningEffort as "low" | "medium" | "high" } }
         : {}),
     });
@@ -41,8 +44,8 @@ export async function POST(request: Request) {
           // End of stream
           controller.close();
         } catch (error) {
-          console.error("Error in streaming loop:", error);
-          controller.error(error);
+          logger.error({ err: error }, "Error in streaming loop");
+          controller.error(error as Error);
         }
       },
     });
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Error in POST handler:", error);
+    logger.error({ err: error }, "Error in POST handler");
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : "Unknown error",

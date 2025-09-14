@@ -38,6 +38,7 @@ import {
 import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
 import { PaperclipIcon } from "lucide-react";
 import useUiStore from "@/stores/useUiStore";
+import { MODELS, isReasoningModel } from "@/lib/models";
 
 interface ChatProps {
   items: Item[];
@@ -61,7 +62,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
 
   const isEmpty = items.length === 0 && !isAssistantLoading;
 
-  const isReasoningModel = (id: string) => /gpt-5-(mini|nano)/i.test(id);
+  const reasoningFor = (id: string) => isReasoningModel(id);
 
   return (
     <div className="flex justify-center items-center size-full bg-[#0d0f12]">
@@ -141,21 +142,14 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
                       <PromptInputModelSelectValue />
                     </PromptInputModelSelectTrigger>
                     <PromptInputModelSelectContent>
-                      <PromptInputModelSelectItem value="gpt-4.1">
-                        GPT-4.1
-                      </PromptInputModelSelectItem>
-                      <PromptInputModelSelectItem value="gpt-5-mini">
-                        GPT-5 Mini
-                      </PromptInputModelSelectItem>
-                      <PromptInputModelSelectItem value="gpt-5-nano">
-                        GPT-5 Nano
-                      </PromptInputModelSelectItem>
-                      <PromptInputModelSelectItem value="gpt-4o-mini">
-                        GPT-4o mini
-                      </PromptInputModelSelectItem>
+                      {MODELS.map((m) => (
+                        <PromptInputModelSelectItem key={m.id} value={m.id}>
+                          {m.label ?? m.id}
+                        </PromptInputModelSelectItem>
+                      ))}
                     </PromptInputModelSelectContent>
                   </PromptInputModelSelect>
-                  {isReasoningModel(modelId) && (
+                  {reasoningFor(modelId) && (
                     <PromptInputModelSelect
                       value={reasoningEffort}
                       onValueChange={(v) => setReasoningEffort(v as any)}

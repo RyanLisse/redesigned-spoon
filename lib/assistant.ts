@@ -132,7 +132,7 @@ export const handleTurn = async (
       }
     }
   } catch (error) {
-    console.error("Error handling turn:", error);
+    // Silently fail in UI without console noise
   }
 };
 

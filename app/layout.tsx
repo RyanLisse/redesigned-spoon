@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Image from "next/image";
+import BrowserEchoScript from "@browser-echo/next/BrowserEchoScript";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -29,6 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {process.env.NODE_ENV === "development" && (
+          <BrowserEchoScript route="/api/client-logs" />
+        )}
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0d0f12] text-foreground`}>
         <div className="flex h-screen w-full flex-col">
           <header className="flex items-center justify-between px-4 py-3 border-b border-border">
