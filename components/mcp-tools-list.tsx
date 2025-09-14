@@ -22,7 +22,7 @@ export default function McpToolsList({ item }: Props) {
           {description}
         </div>
         <div
-          className="flex items-center text-xs text-gray-500 focus:outline-none select-none cursor-pointer"
+          className="flex items-center text-xs text-gray-500 focus:outline-hidden select-none cursor-pointer"
           onClick={() => setExpanded((prev) => !prev)}
         >
           <ChevronRight
