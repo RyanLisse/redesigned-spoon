@@ -4,7 +4,7 @@ import OpenAI from "openai";
 
 export async function POST(request: Request) {
   try {
-    const { messages, toolsState } = await request.json();
+    const { messages, toolsState, modelId, reasoningEffort } = await request.json();
 
     const tools = await getTools(toolsState);
 
@@ -15,12 +15,15 @@ export async function POST(request: Request) {
     const openai = new OpenAI();
 
     const events = await openai.responses.create({
-      model: MODEL,
+      model: modelId || MODEL,
       input: messages,
       instructions: getDeveloperPrompt(),
       tools,
       stream: true,
       parallel_tool_calls: false,
+      ...(reasoningEffort
+        ? { reasoning: { effort: reasoningEffort as "low" | "medium" | "high" } }
+        : {}),
     });
 
     // Create a ReadableStream that emits SSE data

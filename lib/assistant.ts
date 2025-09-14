@@ -4,6 +4,7 @@ import useConversationStore from "@/stores/useConversationStore";
 import useToolsStore, { ToolsState } from "@/stores/useToolsStore";
 import { Annotation } from "@/components/annotations";
 import { functionsMap } from "@/config/functions";
+import useUiStore from "@/stores/useUiStore";
 
 const normalizeAnnotation = (annotation: any): Annotation => ({
   ...annotation,
@@ -15,6 +16,8 @@ export interface ContentItem {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
   annotations?: Annotation[];
   text?: string;
+  reasoning?: string;
+  reasoning_streaming?: boolean;
 }
 
 // Message items for storing conversation history matching API shape
@@ -75,12 +78,15 @@ export const handleTurn = async (
 ) => {
   try {
     // Get response from the API (defined in app/api/turn_response/route.ts)
+    const { modelId, reasoningEffort } = useUiStore.getState();
     const response = await fetch("/api/turn_response", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: messages,
         toolsState: toolsState,
+        modelId,
+        reasoningEffort,
       }),
     });
 
@@ -147,6 +153,9 @@ export const processMessages = async () => {
   let functionArguments = "";
   // For streaming MCP tool call arguments
   let mcpArguments = "";
+  // For streaming reasoning/thinking text
+  let reasoningContent = "";
+  let reasoningStreaming = false;
 
   await handleTurn(
     allConversationItems,
@@ -179,6 +188,9 @@ export const processMessages = async () => {
                 {
                   type: "output_text",
                   text: assistantMessageContent,
+                  ...(reasoningContent
+                    ? { reasoning: reasoningContent, reasoning_streaming: reasoningStreaming }
+                    : {}),
                 },
               ],
             } as MessageItem);
@@ -186,6 +198,10 @@ export const processMessages = async () => {
             const contentItem = lastItem.content[0];
             if (contentItem && contentItem.type === "output_text") {
               contentItem.text = assistantMessageContent;
+              if (reasoningContent) {
+                contentItem.reasoning = reasoningContent;
+                contentItem.reasoning_streaming = reasoningStreaming;
+              }
               if (annotation) {
                 contentItem.annotations = [
                   ...(contentItem.annotations ?? []),
@@ -197,6 +213,47 @@ export const processMessages = async () => {
 
           setChatMessages([...chatMessages]);
           setAssistantLoading(false);
+          break;
+        }
+
+        case "response.reasoning.delta": {
+          const { delta, item_id } = data;
+          reasoningStreaming = true;
+          reasoningContent += typeof delta === "string" ? delta : "";
+          const lastItem = chatMessages[chatMessages.length - 1];
+          if (
+            lastItem &&
+            lastItem.type === "message" &&
+            lastItem.role === "assistant" &&
+            (!lastItem.id || lastItem.id === item_id)
+          ) {
+            const contentItem = lastItem.content[0];
+            if (contentItem && contentItem.type === "output_text") {
+              contentItem.reasoning = reasoningContent;
+              contentItem.reasoning_streaming = true;
+            }
+          }
+          setChatMessages([...chatMessages]);
+          break;
+        }
+
+        case "response.reasoning.done": {
+          const { item_id } = data;
+          reasoningStreaming = false;
+          const lastItem = chatMessages[chatMessages.length - 1];
+          if (
+            lastItem &&
+            lastItem.type === "message" &&
+            lastItem.role === "assistant" &&
+            (!lastItem.id || lastItem.id === item_id)
+          ) {
+            const contentItem = lastItem.content[0];
+            if (contentItem && contentItem.type === "output_text") {
+              contentItem.reasoning = reasoningContent;
+              contentItem.reasoning_streaming = false;
+            }
+          }
+          setChatMessages([...chatMessages]);
           break;
         }
 

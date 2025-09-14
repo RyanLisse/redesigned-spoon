@@ -37,6 +37,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
 import { PaperclipIcon } from "lucide-react";
+import useUiStore from "@/stores/useUiStore";
 
 interface ChatProps {
   items: Item[];
@@ -48,6 +49,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
   const itemsEndRef = useRef<HTMLDivElement>(null);
   const [inputMessageText, setInputMessageText] = useState<string>("");
   const { isAssistantLoading } = useConversationStore();
+  const { modelId, setModelId, reasoningEffort, setReasoningEffort } = useUiStore();
 
   const scrollToBottom = () => {
     itemsEndRef.current?.scrollIntoView({ behavior: "instant" });
@@ -103,7 +105,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
 
         <div className="flex-1 p-4 px-6">
           <PromptInput
-            className="border-0 bg-[#1a1a1a] text-foreground rounded-2xl"
+            className="rounded-2xl border border-white/10 bg-[#1a1a1a] text-foreground shadow-sm"
             onSubmit={(message) => {
               const text = (message.text || "").trim();
               if (!text) return;
@@ -132,7 +134,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
                     </PromptInputActionMenuContent>
                   </PromptInputActionMenu>
 
-                  <PromptInputModelSelect defaultValue="gpt-4.1">
+                  <PromptInputModelSelect value={modelId} onValueChange={(v) => setModelId(v)}>
                     <PromptInputModelSelectTrigger>
                       <PromptInputModelSelectValue />
                     </PromptInputModelSelectTrigger>
@@ -145,8 +147,16 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
                       </PromptInputModelSelectItem>
                     </PromptInputModelSelectContent>
                   </PromptInputModelSelect>
-
-                  <PromptInputButton variant="ghost">Medium</PromptInputButton>
+                  <PromptInputModelSelect value={reasoningEffort} onValueChange={(v) => setReasoningEffort(v as any)}>
+                    <PromptInputModelSelectTrigger>
+                      <PromptInputModelSelectValue />
+                    </PromptInputModelSelectTrigger>
+                    <PromptInputModelSelectContent>
+                      <PromptInputModelSelectItem value="low">Low</PromptInputModelSelectItem>
+                      <PromptInputModelSelectItem value="medium">Medium</PromptInputModelSelectItem>
+                      <PromptInputModelSelectItem value="high">High</PromptInputModelSelectItem>
+                    </PromptInputModelSelectContent>
+                  </PromptInputModelSelect>
                 </PromptInputTools>
                 <PromptInputSubmit aria-label="Send" />
               </PromptInputToolbar>
@@ -173,4 +183,3 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
 };
 
 export default Chat;
-
