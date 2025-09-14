@@ -29,8 +29,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="flex h-screen w-full flex-col bg-background text-foreground">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0d0f12] text-foreground`}>
+        <div className="flex h-screen w-full flex-col">
           <header className="flex items-center justify-between px-4 py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <Image src="/hgg-logo.png" alt="HGG logo" width={24} height={24} />

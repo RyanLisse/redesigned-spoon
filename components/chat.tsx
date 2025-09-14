@@ -61,14 +61,16 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
 
   const isEmpty = items.length === 0 && !isAssistantLoading;
 
+  const isReasoningModel = (id: string) => /gpt-5-(mini|nano)/i.test(id);
+
   return (
-    <div className="flex justify-center items-center size-full">
+    <div className="flex justify-center items-center size-full bg-[#0d0f12]">
       <div className="flex grow flex-col h-full max-w-[900px] gap-2">
         <Conversation className="px-6">
-          <ConversationContent className="flex flex-col gap-5 pt-4">
+          <ConversationContent className="flex flex-col gap-5 pt-10">
             {isEmpty ? (
               <div className="mt-24 flex flex-col items-center gap-6">
-                <h1 className="text-3xl sm:text-5xl font-semibold text-blue-500 text-center">
+                <h1 className="text-4xl sm:text-6xl font-semibold text-[#1e66ff] text-center">
                   How can we help you today?
                 </h1>
               </div>
@@ -105,7 +107,7 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
 
         <div className="flex-1 p-4 px-6">
           <PromptInput
-            className="rounded-2xl border border-white/10 bg-[#1a1a1a] text-foreground shadow-sm"
+            className="mx-auto w-full rounded-2xl border border-white/10 bg-[#1a1a1a] text-foreground shadow-sm"
             onSubmit={(message) => {
               const text = (message.text || "").trim();
               if (!text) return;
@@ -142,21 +144,32 @@ const Chat: React.FC<ChatProps> = ({ items, onSendMessage, onApprovalResponse })
                       <PromptInputModelSelectItem value="gpt-4.1">
                         GPT-4.1
                       </PromptInputModelSelectItem>
+                      <PromptInputModelSelectItem value="gpt-5-mini">
+                        GPT-5 Mini
+                      </PromptInputModelSelectItem>
+                      <PromptInputModelSelectItem value="gpt-5-nano">
+                        GPT-5 Nano
+                      </PromptInputModelSelectItem>
                       <PromptInputModelSelectItem value="gpt-4o-mini">
                         GPT-4o mini
                       </PromptInputModelSelectItem>
                     </PromptInputModelSelectContent>
                   </PromptInputModelSelect>
-                  <PromptInputModelSelect value={reasoningEffort} onValueChange={(v) => setReasoningEffort(v as any)}>
-                    <PromptInputModelSelectTrigger>
-                      <PromptInputModelSelectValue />
-                    </PromptInputModelSelectTrigger>
-                    <PromptInputModelSelectContent>
-                      <PromptInputModelSelectItem value="low">Low</PromptInputModelSelectItem>
-                      <PromptInputModelSelectItem value="medium">Medium</PromptInputModelSelectItem>
-                      <PromptInputModelSelectItem value="high">High</PromptInputModelSelectItem>
-                    </PromptInputModelSelectContent>
-                  </PromptInputModelSelect>
+                  {isReasoningModel(modelId) && (
+                    <PromptInputModelSelect
+                      value={reasoningEffort}
+                      onValueChange={(v) => setReasoningEffort(v as any)}
+                    >
+                      <PromptInputModelSelectTrigger>
+                        <PromptInputModelSelectValue />
+                      </PromptInputModelSelectTrigger>
+                      <PromptInputModelSelectContent>
+                        <PromptInputModelSelectItem value="low">Low</PromptInputModelSelectItem>
+                        <PromptInputModelSelectItem value="medium">Medium</PromptInputModelSelectItem>
+                        <PromptInputModelSelectItem value="high">High</PromptInputModelSelectItem>
+                      </PromptInputModelSelectContent>
+                    </PromptInputModelSelect>
+                  )}
                 </PromptInputTools>
                 <PromptInputSubmit aria-label="Send" />
               </PromptInputToolbar>

@@ -1,8 +1,8 @@
-import type React from "react";
-import { Response } from "@/components/ai-elements/response";
 import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning";
+import { Response } from "@/components/ai-elements/response";
 import type { MessageItem } from "@/lib/assistant";
 import Image from "next/image";
+import type React from "react";
 
 // Hoisted regex to avoid recreating it on each render
 const IMAGE_EXT_REGEX = /\.(png|jpg|jpeg|gif|webp|svg)$/i;
