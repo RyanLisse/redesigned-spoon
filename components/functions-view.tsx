@@ -13,18 +13,16 @@ type ToolParameter = {
 
 const getToolArgs = (parameters: {
   [key: string]: ToolParameter | undefined;
-}) => {
-  return (
-    <div className="ml-4">
-      {Object.entries(parameters).map(([key, value]) => (
-        <div className="my-1 flex items-center space-x-2 text-xs" key={key}>
-          <span className="text-blue-500">{key}:</span>
-          <span className="text-zinc-400">{value?.type}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
+}) => (
+  <div className="ml-4">
+    {Object.entries(parameters).map(([key, value]) => (
+      <div className="my-1 flex items-center space-x-2 text-xs" key={key}>
+        <span className="text-blue-500">{key}:</span>
+        <span className="text-zinc-400">{value?.type}</span>
+      </div>
+    ))}
+  </div>
+);
 
 export default function FunctionsView() {
   return (

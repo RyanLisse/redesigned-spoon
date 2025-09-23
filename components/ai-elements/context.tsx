@@ -194,7 +194,7 @@ export const ContextContentFooter = ({
   ...props
 }: ContextContentFooter) => {
   const { modelId, usage } = useContextValue();
-  const costUSD = modelId
+  const costUsd = modelId
     ? estimateCost({
         modelId,
         usage: {
@@ -206,7 +206,7 @@ export const ContextContentFooter = ({
   const totalCost = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(costUSD ?? 0);
+  }).format(costUsd ?? 0);
 
   return (
     <div

@@ -1,19 +1,16 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* biome-ignore lint: correct */
 import type { ToolsState } from "@/stores/useToolsStore";
 import { toolsList } from "../../config/tools-list";
 
-export const getTools = async (toolsState: ToolsState) => {
-  const {
-    fileSearchEnabled,
-    functionsEnabled,
-    vectorStore,
-    mcpEnabled,
-    mcpConfig,
-  } = toolsState;
+export const getTools = (toolsState: ToolsState) => {
+  const { functionsEnabled, vectorStore, mcpEnabled, mcpConfig } = toolsState;
 
   const tools: any[] = [];
 
-  // Always prefer file search when enabled and a vector store is configured
-  if (fileSearchEnabled && vectorStore?.id) {
+  // Always include file search with the default vectorstore on every query if configured
+  if (vectorStore?.id) {
     tools.push({
       type: "file_search",
       vector_store_ids: [vectorStore.id],
@@ -22,20 +19,18 @@ export const getTools = async (toolsState: ToolsState) => {
 
   if (functionsEnabled) {
     tools.push(
-      ...toolsList.map((tool) => {
-        return {
-          type: "function",
-          name: tool.name,
-          description: tool.description,
-          parameters: {
-            type: "object",
-            properties: { ...tool.parameters },
-            required: Object.keys(tool.parameters),
-            additionalProperties: false,
-          },
-          strict: true,
-        };
-      })
+      ...toolsList.map((tool) => ({
+        type: "function",
+        name: tool.name,
+        description: tool.description,
+        parameters: {
+          type: "object",
+          properties: { ...tool.parameters },
+          required: Object.keys(tool.parameters),
+          additionalProperties: false,
+        },
+        strict: true,
+      }))
     );
   }
 

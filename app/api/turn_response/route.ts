@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import OpenAi from "openai";
 import { getDeveloperPrompt, MODEL } from "@/config/constants";
 import logger from "@/lib/logger";
 import { isReasoningModel } from "@/lib/models";
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     logger.info({ tools }, "Tools prepared");
     logger.info({ messages }, "Turn request received");
 
-    const openai = new OpenAI();
+    const openai = new OpenAi();
 
     const selectedModel = modelId || MODEL;
     const supportsReasoning = isReasoningModel(selectedModel);

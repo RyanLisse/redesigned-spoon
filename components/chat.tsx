@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  BugIcon,
   CogIcon,
   FileTextIcon,
+  NotepadText,
+  Paintbrush,
   PaperclipIcon,
-  PlugIcon,
-  ShieldAlertIcon,
-  WrenchIcon,
+  Sparkle,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -47,6 +47,7 @@ import { isReasoningModel, MODELS } from "@/lib/models";
 import useConversationStore from "@/stores/useConversationStore";
 import type { ReasoningEffort } from "@/stores/useUiStore";
 import useUiStore from "@/stores/useUiStore";
+import { SUGGESTIONS } from "@/lib/config";
 import Annotations from "./annotations";
 import LoadingMessage from "./loading-message";
 import McpApproval from "./mcp-approval";
@@ -71,6 +72,8 @@ const Chat: React.FC<ChatProps> = ({
   const { modelId, setModelId, reasoningEffort, setReasoningEffort } =
     useUiStore();
 
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
   // Observe DOM changes and scroll to bottom without depending on items array
   useEffect(() => {
     const scroll = () => {
@@ -86,7 +89,140 @@ const Chat: React.FC<ChatProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  const reasoningFor = (id: string) => isReasoningModel(id);
+  const showOnboarding = items.length === 0 && !isAssistantLoading;
+
+  // Reset active category when input is cleared
+  if (!inputMessageText && activeCategory !== null) {
+    setActiveCategory(null);
+  }
+
+  // Derive active category from input text
+  const derivedActiveCategory = useMemo(() => {
+    if (inputMessageText) {
+      const matched = SUGGESTIONS.find(
+        (group) => group.prompt === inputMessageText
+      );
+      if (matched) return matched.label;
+    }
+    return activeCategory;
+  }, [inputMessageText, activeCategory]);
+
+  const activeCategoryData = SUGGESTIONS.find(
+    (group) => group.label === derivedActiveCategory
+  );
+
+  const showCategorySuggestions =
+    activeCategoryData && activeCategoryData.items.length > 0;
+
+  const handleSuggestionClick = useCallback(
+    (suggestion: string) => {
+      setActiveCategory(null);
+      onSendMessage(suggestion);
+      setInputMessageText("");
+    },
+    [onSendMessage]
+  );
+
+  const handleCategoryClick = useCallback(
+    (category: { label: string; prompt: string }) => {
+      setActiveCategory(category.label);
+      setInputMessageText(category.prompt);
+    },
+    []
+  );
+
+  const suggestionsGrid = useMemo(
+    () => (
+      <motion.div
+        animate="animate"
+        className="flex w-full max-w-full flex-nowrap justify-start gap-2 overflow-x-auto px-2 md:mx-auto md:max-w-2xl md:flex-wrap md:justify-center md:pl-0"
+        initial="initial"
+        key="suggestions-grid"
+        transition={{
+          duration: 0.3,
+          ease: "easeOut",
+        }}
+        variants={{
+          initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
+          animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+        }}
+      >
+        {SUGGESTIONS.map((suggestion, index) => (
+          <motion.button
+            key={suggestion.label}
+            className="flex items-center gap-2 rounded-full border border-gray-700/50 bg-[#2a2d31] px-4 py-2 text-sm text-gray-300 transition-colors duration-200 hover:border-gray-600 hover:bg-[#323539]"
+            animate="animate"
+            initial="initial"
+            onClick={() => handleCategoryClick(suggestion)}
+            transition={{
+              duration: 0.3,
+              delay: index * 0.02,
+              ease: "easeOut",
+            }}
+            variants={{
+              initial: { opacity: 0, scale: 0.8 },
+              animate: { opacity: 1, scale: 1 },
+            }}
+          >
+            <suggestion.icon className="size-4" />
+            {suggestion.label}
+          </motion.button>
+        ))}
+      </motion.div>
+    ),
+    [handleCategoryClick]
+  );
+
+  const suggestionsList = useMemo(
+    () => (
+      <motion.div
+        animate="animate"
+        className="flex w-full flex-col space-y-1 px-2"
+        initial="initial"
+        key={activeCategoryData?.label}
+        transition={{
+          duration: 0.3,
+          ease: "easeOut",
+        }}
+        variants={{
+          initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
+          animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+          exit: {
+            opacity: 0,
+            y: -10,
+            filter: 'blur(4px)',
+          },
+        }}
+      >
+        {activeCategoryData?.items.map((suggestion: string, index: number) => (
+          <motion.button
+            key={`${activeCategoryData?.label}-${suggestion}-${index}`}
+            className="block h-full text-left text-sm text-gray-300 transition-colors duration-200 hover:text-white"
+            animate="animate"
+            initial="initial"
+            onClick={() => handleSuggestionClick(suggestion)}
+            transition={{
+              duration: 0.3,
+              delay: index * 0.05,
+              ease: "easeOut",
+            }}
+            variants={{
+              initial: { opacity: 0, y: -10 },
+              animate: { opacity: 1, y: 0 },
+            }}
+          >
+            {suggestion}
+          </motion.button>
+        ))}
+      </motion.div>
+    ),
+    [
+      handleSuggestionClick,
+      activeCategoryData?.highlight,
+      activeCategoryData?.items,
+      activeCategoryData?.label,
+    ]
+  );
 
   const getItemKey = (item: Item, index: number): string => {
     if ("id" in item && item.id) {
@@ -146,22 +282,50 @@ const Chat: React.FC<ChatProps> = ({
       <div className="flex h-full max-w-[900px] grow flex-col gap-2">
         <Conversation className="px-6">
           <ConversationContent className="flex flex-col gap-5 pt-10">
-            {items.length === 0 && !isAssistantLoading ? (
-              <div className="mt-32 flex flex-col items-center gap-6">
-                <h1 className="text-center font-normal text-4xl text-[#4a9eff] sm:text-5xl">
-                  How can we help you today?
-                </h1>
-              </div>
-            ) : null}
-
-            {items.map((item, index) => renderConversationItem(item, index))}
+            <AnimatePresence mode="wait">
+              {showOnboarding ? (
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-24 flex flex-col items-center gap-6"
+                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  key="onboarding"
+                  transition={{ duration: 0.3 }}
+                >
+                  <h1 className="text-center font-semibold text-4xl text-[#4a9eff] sm:text-5xl">
+                    How can we help you today?
+                  </h1>
+                </motion.div>
+              ) : (
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  key="conversation"
+                  transition={{ duration: 0.3 }}
+                >
+                  {items.map((item, index) =>
+                    renderConversationItem(item, index)
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
             {isAssistantLoading && <LoadingMessage />}
             <div ref={itemsEndRef} />
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
 
-        <div className="flex-1 p-4 px-6">
+        <motion.div
+          className="relative inset-x-0 bottom-0 z-50 mx-auto w-full max-w-3xl px-6"
+          layout="position"
+          layoutId="chat-input-container"
+          transition={{
+            layout: {
+              duration: items.length === 1 ? 0.3 : 0,
+            },
+          }}
+        >
           <PromptInput
             className="mx-auto w-full max-w-[720px] rounded-xl border border-gray-700/50 bg-[#2a2d31] text-white shadow-lg"
             onSubmit={(message) => {
@@ -209,7 +373,7 @@ const Chat: React.FC<ChatProps> = ({
                       ))}
                     </PromptInputModelSelectContent>
                   </PromptInputModelSelect>
-                  {reasoningFor(modelId) && (
+                  {isReasoningModel(modelId) && (
                     <PromptInputModelSelect
                       onValueChange={(v: ReasoningEffort) =>
                         setReasoningEffort(v)
@@ -238,73 +402,10 @@ const Chat: React.FC<ChatProps> = ({
             </PromptInputBody>
           </PromptInput>
 
-          <div className="mt-4">
-            <div className="mx-auto max-w-[720px]">
-              <Suggestions>
-                <Suggestion
-                  className="border border-gray-700/50 bg-[#2a2d31] text-gray-300 hover:border-gray-600 hover:bg-[#323539]"
-                  onClick={(s) => setInputMessageText(`${s} `)}
-                  suggestion="What are the RoboRail safety interlocks?"
-                >
-                  <span className="flex items-center gap-2">
-                    <ShieldAlertIcon className="size-4" />
-                    <span>Safety interlocks</span>
-                  </span>
-                </Suggestion>
-                <Suggestion
-                  className="border border-gray-700/50 bg-[#2a2d31] text-gray-300 hover:border-gray-600 hover:bg-[#323539]"
-                  onClick={(s) => setInputMessageText(`${s} `)}
-                  suggestion="What is the RoboRail maintenance schedule?"
-                >
-                  <span className="flex items-center gap-2">
-                    <WrenchIcon className="size-4" />
-                    <span>Maintenance schedule</span>
-                  </span>
-                </Suggestion>
-                <Suggestion
-                  className="border border-gray-700/50 bg-[#2a2d31] text-gray-300 hover:border-gray-600 hover:bg-[#323539]"
-                  onClick={(s) => setInputMessageText(`${s} `)}
-                  suggestion="What are the RoboRail electrical specifications?"
-                >
-                  <span className="flex items-center gap-2">
-                    <FileTextIcon className="size-4" />
-                    <span>Electrical specs</span>
-                  </span>
-                </Suggestion>
-                <Suggestion
-                  className="border border-gray-700/50 bg-[#2a2d31] text-gray-300 hover:border-gray-600 hover:bg-[#323539]"
-                  onClick={(s) => setInputMessageText(`${s} `)}
-                  suggestion="How do I set up the HGG RoboRail for a new profile?"
-                >
-                  <span className="flex items-center gap-2">
-                    <PlugIcon className="size-4" />
-                    <span>Setup new profile</span>
-                  </span>
-                </Suggestion>
-                <Suggestion
-                  className="border border-gray-700/50 bg-[#2a2d31] text-gray-300 hover:border-gray-600 hover:bg-[#323539]"
-                  onClick={(s) => setInputMessageText(`${s} `)}
-                  suggestion="How to troubleshoot RoboRail calibration issues?"
-                >
-                  <span className="flex items-center gap-2">
-                    <BugIcon className="size-4" />
-                    <span>Calibration troubleshooting</span>
-                  </span>
-                </Suggestion>
-                <Suggestion
-                  className="border border-gray-700/50 bg-[#2a2d31] text-gray-300 hover:border-gray-600 hover:bg-[#323539]"
-                  onClick={(s) => setInputMessageText(`${s} `)}
-                  suggestion="What is the RoboRail operational range and capacity?"
-                >
-                  <span className="flex items-center gap-2">
-                    <CogIcon className="size-4" />
-                    <span>Operation range & capacity</span>
-                  </span>
-                </Suggestion>
-              </Suggestions>
-            </div>
-          </div>
-        </div>
+          <AnimatePresence mode="wait">
+            {showCategorySuggestions ? suggestionsList : suggestionsGrid}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
