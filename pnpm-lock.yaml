@@ -9,8 +9,13 @@ importers:
   .:
     dependencies:
       '@browser-echo/next':
+<<<<<<< Updated upstream
         specifier: ^1.0.2
         version: 1.0.2(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+=======
+        specifier: ^1.1.0
+        version: 1.1.0(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+>>>>>>> Stashed changes
       '@npmcli/fs':
         specifier: ^4.0.0
         version: 4.0.0
@@ -111,8 +116,8 @@ importers:
         specifier: ^14.3.8
         version: 14.3.8(react@18.3.1)
       react-markdown:
-        specifier: ^9.0.1
-        version: 9.1.0(@types/react@18.3.24)(react@18.3.1)
+        specifier: 10.1.0
+        version: 10.1.0(@types/react@18.3.24)(react@18.3.1)
       react-syntax-highlighter:
         specifier: ^15.6.1
         version: 15.6.6(react@18.3.1)
@@ -123,8 +128,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(@types/react@18.3.24)(react@18.3.1)
       tailwind-merge:
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: 3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.13)
@@ -275,11 +280,19 @@ packages:
   '@braintree/sanitize-url@7.1.1':
     resolution: {integrity: sha512-i1L7noDNxtFyL5DmZafWy1wRVhGehQmzZaz1HiN5e7iylJMSZR7ekOV7NsIqa5qBldlLrsKv4HbgFUVlQrz8Mw==}
 
+<<<<<<< Updated upstream
   '@browser-echo/core@1.0.2':
     resolution: {integrity: sha512-apc0JYYFADGEU9lJ94IimSSXp9yz3RTn4Ipz2xX5TBfozYhejv9WgFTsUmkvyVNzEUCC8RpBfz956M510HAvyw==}
 
   '@browser-echo/next@1.0.2':
     resolution: {integrity: sha512-gXjAzJ/FVanHfL+7JNxOXeNQAAhZDkB9nOvzxN72L4DXiFkwFlKUlUMEAwyLQyotPlHsJOpKB77eEXlLmro2rQ==}
+=======
+  '@browser-echo/core@1.1.0':
+    resolution: {integrity: sha512-8nmX5p7StDgzqwLdZ6cYz9dP9yL1fq3C3CqS9dqVXWUpNCig9aDAxOnHy6wPLcpePOp9pSLSkz4s/9H8VgKihw==}
+
+  '@browser-echo/next@1.1.0':
+    resolution: {integrity: sha512-0aADrLXYzPMwKXHtALt9PzDzZ4P87Z5vEpLd6XTBGXxqKVYmrRIiX2jXltMBrg5gtWXdXQIo5R3yj0CSUfcxkg==}
+>>>>>>> Stashed changes
     hasBin: true
     peerDependencies:
       next: '>=13.4.0'
@@ -3810,12 +3823,6 @@ packages:
       '@types/react': '>=18'
       react: '>=18'
 
-  react-markdown@9.1.0:
-    resolution: {integrity: sha512-xaijuJB0kzGiUdG7nc2MOMDUDBWPyGAjZtUrow9XxUeua8IqeP+VlIfAZ3bphpcLTnSZXz6z9jcVC/TCwbfgdw==}
-    peerDependencies:
-      '@types/react': '>=18'
-      react: '>=18'
-
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
@@ -4184,9 +4191,6 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
-
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
 
   tailwind-merge@3.3.1:
     resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
@@ -4681,11 +4685,19 @@ snapshots:
 
   '@braintree/sanitize-url@7.1.1': {}
 
+<<<<<<< Updated upstream
   '@browser-echo/core@1.0.2': {}
 
   '@browser-echo/next@1.0.2(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@browser-echo/core': 1.0.2
+=======
+  '@browser-echo/core@1.1.0': {}
+
+  '@browser-echo/next@1.1.0(next@15.5.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@browser-echo/core': 1.1.0
+>>>>>>> Stashed changes
       next: 15.5.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -8609,24 +8621,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-markdown@9.1.0(@types/react@18.3.24)(react@18.3.1):
-    dependencies:
-      '@types/hast': 3.0.4
-      '@types/mdast': 4.0.4
-      '@types/react': 18.3.24
-      devlop: 1.1.0
-      hast-util-to-jsx-runtime: 2.3.6
-      html-url-attributes: 3.0.1
-      mdast-util-to-hast: 13.2.0
-      react: 18.3.1
-      remark-parse: 11.0.0
-      remark-rehype: 11.1.2
-      unified: 11.0.5
-      unist-util-visit: 5.0.0
-      vfile: 6.0.3
-    transitivePeerDependencies:
-      - supports-color
-
   react-remove-scroll-bar@2.3.8(@types/react@18.3.24)(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -9162,8 +9156,6 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
-
-  tailwind-merge@2.6.0: {}
 
   tailwind-merge@3.3.1: {}
 
