@@ -30,7 +30,7 @@ help:
 	@echo "  make clean      - Clean all artifacts"
 	@echo "  make quick-start- Setup and start dev server"
 	@echo "  make ci-test    - Run CI test suite"
-	@echo "  make pre-commit - Pre-commit checks"
+	@echo "  make upload-docs - Upload project documentation to vectorstore"
 
 # Kill ports before starting services
 kill-ports:
@@ -106,6 +106,11 @@ test-fix:
 setup:
 	@echo "Running setup script..."
 	@./SETUP.sh
+
+# Upload project documentation to vectorstore
+upload-docs:
+	@echo "Uploading project documentation to vectorstore..."
+	@node scripts/upload-docs.js
 
 # Quick start - setup and run dev
 quick-start: setup dev
