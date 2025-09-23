@@ -9,8 +9,8 @@ import {
   Sparkle,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -43,11 +43,11 @@ import type {
   MessageItem,
   ToolCallItem,
 } from "@/lib/assistant";
+import { SUGGESTIONS } from "@/lib/config";
 import { isReasoningModel, MODELS } from "@/lib/models";
 import useConversationStore from "@/stores/useConversationStore";
 import type { ReasoningEffort } from "@/stores/useUiStore";
 import useUiStore from "@/stores/useUiStore";
-import { SUGGESTIONS } from "@/lib/config";
 import Annotations from "./annotations";
 import LoadingMessage from "./loading-message";
 import McpApproval from "./mcp-approval";
@@ -143,16 +143,16 @@ const Chat: React.FC<ChatProps> = ({
           ease: "easeOut",
         }}
         variants={{
-          initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
-          animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+          initial: { opacity: 0, y: 10, filter: "blur(4px)" },
+          animate: { opacity: 1, y: 0, filter: "blur(0px)" },
         }}
       >
         {SUGGESTIONS.map((suggestion, index) => (
           <motion.button
-            key={suggestion.label}
-            className="flex items-center gap-2 rounded-full border border-gray-700/50 bg-[#2a2d31] px-4 py-2 text-sm text-gray-300 transition-colors duration-200 hover:border-gray-600 hover:bg-[#323539]"
             animate="animate"
+            className="flex items-center gap-2 rounded-full border border-gray-700/50 bg-[#2a2d31] px-4 py-2 text-gray-300 text-sm transition-colors duration-200 hover:border-gray-600 hover:bg-[#323539]"
             initial="initial"
+            key={suggestion.label}
             onClick={() => handleCategoryClick(suggestion)}
             transition={{
               duration: 0.3,
@@ -185,21 +185,21 @@ const Chat: React.FC<ChatProps> = ({
           ease: "easeOut",
         }}
         variants={{
-          initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
-          animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+          initial: { opacity: 0, y: 10, filter: "blur(4px)" },
+          animate: { opacity: 1, y: 0, filter: "blur(0px)" },
           exit: {
             opacity: 0,
             y: -10,
-            filter: 'blur(4px)',
+            filter: "blur(4px)",
           },
         }}
       >
         {activeCategoryData?.items.map((suggestion: string, index: number) => (
           <motion.button
-            key={`${activeCategoryData?.label}-${suggestion}-${index}`}
-            className="block h-full text-left text-sm text-gray-300 transition-colors duration-200 hover:text-white"
             animate="animate"
+            className="block h-full text-left text-gray-300 text-sm transition-colors duration-200 hover:text-white"
             initial="initial"
+            key={`${activeCategoryData?.label}-${suggestion}-${index}`}
             onClick={() => handleSuggestionClick(suggestion)}
             transition={{
               duration: 0.3,

@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { ComponentProps } from "react";
+import type { ReasoningSummary } from "@/lib/reasoning-parser";
 import { createContext, memo, useContext } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -72,10 +73,12 @@ export const ChainOfThought = memo(
 
 export type ChainOfThoughtHeaderProps = ComponentProps<
   typeof CollapsibleTrigger
->;
+> & {
+  reasoningSummary?: ReasoningSummary;
+};
 
 export const ChainOfThoughtHeader = memo(
-  ({ className, children, ...props }: ChainOfThoughtHeaderProps) => {
+  ({ className, children, reasoningSummary, ...props }: ChainOfThoughtHeaderProps) => {
     const { isOpen, setIsOpen } = useChainOfThought();
 
     return (
@@ -107,6 +110,7 @@ export type ChainOfThoughtStepProps = ComponentProps<"div"> & {
   icon?: LucideIcon;
   label: string;
   description?: string;
+  step?: { label: string; description: string };
   status?: "complete" | "active" | "pending";
 };
 
@@ -116,10 +120,14 @@ export const ChainOfThoughtStep = memo(
     icon: Icon = DotIcon,
     label,
     description,
+    step,
     status = "complete",
     children,
     ...props
   }: ChainOfThoughtStepProps) => {
+    const displayLabel = step?.label || label || "";
+    const displayDescription = step?.description || description || "";
+
     const statusStyles = {
       complete: "text-muted-foreground",
       active: "text-foreground",
@@ -141,9 +149,9 @@ export const ChainOfThoughtStep = memo(
           <div className="-mx-px absolute top-7 bottom-0 left-1/2 w-px bg-border" />
         </div>
         <div className="flex-1 space-y-2">
-          <div>{label}</div>
-          {description && (
-            <div className="text-muted-foreground text-xs">{description}</div>
+          <div>{displayLabel}</div>
+          {displayDescription && (
+            <div className="text-muted-foreground text-xs">{displayDescription}</div>
           )}
           {children}
         </div>
@@ -199,6 +207,52 @@ export const ChainOfThoughtContent = memo(
   }
 );
 
+export type ChainOfThoughtSummaryProps = ComponentProps<"div"> & {
+  reasoningSummary: ReasoningSummary;
+};
+
+export const ChainOfThoughtSummary = memo(
+  ({ className, reasoningSummary, ...props }: ChainOfThoughtSummaryProps) => {
+    if (!reasoningSummary) return null;
+
+    return (
+      <div className={cn("space-y-4", className)} {...props}>
+        {reasoningSummary.steps.map((step) => (
+          <ChainOfThoughtStep
+            key={step.id}
+            label={step.label}
+            description={step.description}
+            status={step.status}
+          >
+            {step.content}
+          </ChainOfThoughtStep>
+        ))}
+        {reasoningSummary.toolUsage && (
+          <div className="flex gap-2 text-sm text-muted-foreground fade-in-0 slide-in-from-top-2 animate-in">
+            <div className="relative mt-0.5">
+              <DotIcon className="size-4" />
+            </div>
+            <div className="flex-1 space-y-2">
+              <div>Tool Usage Summary</div>
+              <div className="text-muted-foreground text-xs space-y-1">
+                {reasoningSummary.toolUsage.fileSearch && (
+                  <div>• File search used</div>
+                )}
+                {reasoningSummary.toolUsage.functions.length > 0 && (
+                  <div>• Functions called: {reasoningSummary.toolUsage.functions.join(', ')}</div>
+                )}
+                {reasoningSummary.toolUsage.mcp && (
+                  <div>• MCP tools used</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
 export type ChainOfThoughtImageProps = ComponentProps<"div"> & {
   caption?: string;
 };
@@ -220,4 +274,5 @@ ChainOfThoughtStep.displayName = "ChainOfThoughtStep";
 ChainOfThoughtSearchResults.displayName = "ChainOfThoughtSearchResults";
 ChainOfThoughtSearchResult.displayName = "ChainOfThoughtSearchResult";
 ChainOfThoughtContent.displayName = "ChainOfThoughtContent";
+ChainOfThoughtSummary.displayName = "ChainOfThoughtSummary";
 ChainOfThoughtImage.displayName = "ChainOfThoughtImage";
