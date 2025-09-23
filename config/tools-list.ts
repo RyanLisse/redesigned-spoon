@@ -3,24 +3,6 @@
 // More information on function calling: https://platform.openai.com/docs/guides/function-calling
 
 export const toolsList = [
-  {
-    name: "get_weather",
-    description: "Get the weather for a given location",
-    parameters: {
-      location: {
-        type: "string",
-        description: "Location to get weather for",
-      },
-      unit: {
-        type: "string",
-        description: "Unit to get weather in",
-        enum: ["celsius", "fahrenheit"],
-      },
-    },
-  },
-  {
-    name: "get_joke",
-    description: "Get a programming joke",
-    parameters: {},
-  },
+  // File search is now always enabled via vectorstore configuration
+  // Function tools can be added here as needed
 ];
