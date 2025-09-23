@@ -2,9 +2,9 @@ import { parse } from "partial-json";
 import type { Annotation } from "@/components/annotations";
 import type { functionsMap } from "@/config/functions";
 import { handleTool } from "@/lib/tools/tools-handling";
+import useUiStore from "@/stores/use-ui-store";
 import useConversationStore from "@/stores/useConversationStore";
 import useToolsStore, { type ToolsState } from "@/stores/useToolsStore";
-import useUiStore from "@/stores/useUiStore";
 
 const normalizeAnnotation = (annotation: any): Annotation => ({
   ...annotation,
@@ -12,24 +12,24 @@ const normalizeAnnotation = (annotation: any): Annotation => ({
   containerId: annotation.container_id ?? annotation.containerId,
 });
 
-export interface ContentItem {
+export type ContentItem = {
   type: "input_text" | "output_text" | "refusal" | "output_audio";
   annotations?: Annotation[];
   text?: string;
   reasoning?: string;
   reasoning_streaming?: boolean;
-}
+};
 
 // Message items for storing conversation history matching API shape
-export interface MessageItem {
+export type MessageItem = {
   type: "message";
   role: "user" | "assistant" | "system";
   id?: string;
   content: ContentItem[];
-}
+};
 
 // Custom items to display in chat
-export interface ToolCallItem {
+export type ToolCallItem = {
   type: "tool_call";
   tool_type: "file_search_call" | "function_call" | "mcp_call";
   status: "in_progress" | "completed" | "failed" | "searching";
@@ -45,22 +45,22 @@ export interface ToolCallItem {
     container_id?: string;
     filename?: string;
   }[];
-}
+};
 
-export interface McpListToolsItem {
+export type McpListToolsItem = {
   type: "mcp_list_tools";
   id: string;
   server_label: string;
   tools: { name: string; description?: string }[];
-}
+};
 
-export interface McpApprovalRequestItem {
+export type McpApprovalRequestItem = {
   type: "mcp_approval_request";
   id: string;
   server_label: string;
   name: string;
   arguments?: string;
-}
+};
 
 export type Item =
   | MessageItem
@@ -88,12 +88,14 @@ export const handleTurn = async (
     });
 
     if (!response.ok) {
-      console.error(`Error: ${response.status} - ${response.statusText}`);
       return;
     }
 
     // Reader for streaming data
-    const reader = response.body!.getReader();
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("Unable to read response body");
+    }
     const decoder = new TextDecoder();
     let done = false;
     let buffer = "";
@@ -121,14 +123,14 @@ export const handleTurn = async (
     }
 
     // Handle any remaining data in buffer
-    if (buffer && buffer.startsWith("data: ")) {
+    if (buffer?.startsWith("data: ")) {
       const dataStr = buffer.slice(6);
       if (dataStr !== "[DONE]") {
         const data = JSON.parse(dataStr);
         onMessage(data);
       }
     }
-  } catch (error) {
+  } catch (_error) {
     // Silently fail in UI without console noise
   }
 };
@@ -170,7 +172,7 @@ export const processMessages = async () => {
           assistantMessageContent += partial;
 
           // If the last message isn't an assistant message, create a new one
-          const lastItem = chatMessages[chatMessages.length - 1];
+          const lastItem = chatMessages.at(-1);
           if (
             !lastItem ||
             lastItem.type !== "message" ||
@@ -220,7 +222,7 @@ export const processMessages = async () => {
           const { delta, item_id } = data;
           reasoningStreaming = true;
           reasoningContent += typeof delta === "string" ? delta : "";
-          const lastItem = chatMessages[chatMessages.length - 1];
+          const lastItem = chatMessages.at(-1);
           if (
             lastItem &&
             lastItem.type === "message" &&
@@ -240,7 +242,7 @@ export const processMessages = async () => {
         case "response.reasoning.done": {
           const { item_id } = data;
           reasoningStreaming = false;
-          const lastItem = chatMessages[chatMessages.length - 1];
+          const lastItem = chatMessages.at(-1);
           if (
             lastItem &&
             lastItem.type === "message" &&
@@ -260,7 +262,7 @@ export const processMessages = async () => {
         case "response.output_item.added": {
           const { item } = data || {};
           // New item coming in
-          if (!(item && item.type)) {
+          if (!item?.type) {
             break;
           }
           setAssistantLoading(false);
@@ -472,8 +474,34 @@ export const processMessages = async () => {
           break;
         }
 
+        case "message_complete": {
+          const { message, annotations } = data;
+
+          // Find the last assistant message and add annotations
+          const lastItem = chatMessages.at(-1);
+          if (
+            lastItem &&
+            lastItem.type === "message" &&
+            lastItem.role === "assistant"
+          ) {
+            const contentItem = lastItem.content[0];
+            if (contentItem && contentItem.type === "output_text") {
+              // Add annotations from file search and other citations
+              if (annotations && annotations.length > 0) {
+                const normalizedAnnotations =
+                  annotations.map(normalizeAnnotation);
+                contentItem.annotations = [
+                  ...(contentItem.annotations ?? []),
+                  ...normalizedAnnotations,
+                ];
+                setChatMessages([...chatMessages]);
+              }
+            }
+          }
+          break;
+        }
+
         case "response.completed": {
-          console.log("response completed", data);
           const { response } = data;
 
           // Handle MCP tools list (append all lists, not just the first)

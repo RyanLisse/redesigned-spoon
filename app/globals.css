@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-/* biome-ignore lint/nursery/noUnknownAtRules: Tailwind CSS v4 plugin at-rule */
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS v4 plugin at-rule */
 @plugin 'tailwindcss-animate';
 
-/* biome-ignore lint/nursery/noUnknownAtRules: Tailwind CSS v4 custom variant */
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS v4 custom variant */
 @custom-variant dark (&:is(.dark *));
 
-/* biome-ignore lint/nursery/noUnknownAtRules: Tailwind CSS v4 theme at-rule */
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS v4 theme at-rule */
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -170,18 +170,18 @@
 
 @layer base {
   * {
-    /* biome-ignore lint/nursery/noUnknownAtRules: Tailwind CSS v4 apply at-rule */
+    /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS v4 apply at-rule */
     @apply border-border;
   }
   html {
     /* Ensure the page background matches the app background to avoid white outlines */
-    /* biome-ignore lint/nursery/noUnknownAtRules: Tailwind CSS v4 apply at-rule */
+    /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS v4 apply at-rule */
     @apply bg-background;
   }
   body {
     /* Remove default browser margin to prevent white border around the viewport */
     margin: 0;
-    /* biome-ignore lint/nursery/noUnknownAtRules: Tailwind CSS v4 apply at-rule */
+    /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS v4 apply at-rule */
     @apply bg-background text-foreground;
   }
 }

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CogIcon,
-  FileTextIcon,
-  NotepadText,
-  Paintbrush,
-  PaperclipIcon,
-  Sparkle,
-} from "lucide-react";
+import { PaperclipIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -35,7 +28,6 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
-import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import type {
   Item,
   McpApprovalRequestItem,
@@ -45,10 +37,9 @@ import type {
 } from "@/lib/assistant";
 import { SUGGESTIONS } from "@/lib/config";
 import { isReasoningModel, MODELS } from "@/lib/models";
+import type { ReasoningEffort } from "@/stores/use-ui-store";
+import useUiStore from "@/stores/use-ui-store";
 import useConversationStore from "@/stores/useConversationStore";
-import type { ReasoningEffort } from "@/stores/useUiStore";
-import useUiStore from "@/stores/useUiStore";
-import Annotations from "./annotations";
 import LoadingMessage from "./loading-message";
 import McpApproval from "./mcp-approval";
 import McpToolsList from "./mcp-tools-list";
@@ -102,7 +93,9 @@ const Chat: React.FC<ChatProps> = ({
       const matched = SUGGESTIONS.find(
         (group) => group.prompt === inputMessageText
       );
-      if (matched) return matched.label;
+      if (matched) {
+        return matched.label;
+      }
     }
     return activeCategory;
   }, [inputMessageText, activeCategory]);
@@ -218,7 +211,6 @@ const Chat: React.FC<ChatProps> = ({
     ),
     [
       handleSuggestionClick,
-      activeCategoryData?.highlight,
       activeCategoryData?.items,
       activeCategoryData?.label,
     ]
@@ -244,7 +236,9 @@ const Chat: React.FC<ChatProps> = ({
     return `${item.type}-i${index}`;
   };
 
-  const allToolCalls = items.filter(item => item.type === 'tool_call') as ToolCallItem[];
+  const allToolCalls = items.filter(
+    (item) => item.type === "tool_call"
+  ) as ToolCallItem[];
 
   const renderConversationItem = (item: Item, index: number): ReactNode => {
     switch (item.type) {
@@ -253,12 +247,11 @@ const Chat: React.FC<ChatProps> = ({
       }
       case "message": {
         return (
-          <div className="flex flex-col gap-1" key={getItemKey(item, index)}>
-            <Message message={item} toolCalls={allToolCalls} />
-            {item.content?.[0]?.annotations?.length ? (
-              <Annotations annotations={item.content[0].annotations} />
-            ) : null}
-          </div>
+          <Message
+            key={getItemKey(item, index)}
+            message={item}
+            toolCalls={allToolCalls}
+          />
         );
       }
       case "mcp_list_tools": {

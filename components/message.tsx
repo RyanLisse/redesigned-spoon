@@ -7,6 +7,7 @@ import {
   ChainOfThoughtSummary,
 } from "@/components/ai-elements/chain-of-thought";
 import { Response } from "@/components/ai-elements/response";
+import Annotations from "@/components/annotations";
 import type { MessageItem, ToolCallItem } from "@/lib/assistant";
 import { createReasoningSummary } from "@/lib/reasoning-parser";
 
@@ -21,7 +22,7 @@ type MessageProps = {
 
 const Message: React.FC<MessageProps> = ({ message, toolCalls = [] }) => {
   // Create detailed reasoning summary if reasoning exists
-  const reasoningSummary = message.content[0].reasoning
+  const reasoningSummary = message.content[0]?.reasoning
     ? createReasoningSummary(message.content[0].reasoning, undefined, toolCalls)
     : null;
 
@@ -30,9 +31,16 @@ const Message: React.FC<MessageProps> = ({ message, toolCalls = [] }) => {
       {message.role === "user" ? (
         <div className="flex justify-end">
           <div>
-            <div className="ml-4 rounded-[16px] bg-[#ededed] px-4 py-2 font-light text-stone-900 md:ml-24">
+            <div
+              aria-label="User message"
+              className="message-user ml-4 rounded-[16px] bg-[#ededed] px-4 py-2 font-light text-stone-900 md:ml-24"
+              data-testid="message-user"
+              role="article"
+            >
               <div>
-                <div>{message.content[0].text as string}</div>
+                {message.content.map((content, index) => (
+                  <div key={index}>{content.text as string}</div>
+                ))}
               </div>
             </div>
           </div>
@@ -40,24 +48,37 @@ const Message: React.FC<MessageProps> = ({ message, toolCalls = [] }) => {
       ) : (
         <div className="flex flex-col">
           <div className="flex">
-            <div className="mr-4 rounded-[16px] bg-white px-4 py-2 font-light text-black md:mr-24">
+            <div
+              aria-label={`${message.role} message`}
+              className={`mr-4 rounded-[16px] bg-white px-4 py-2 font-light text-black md:mr-24 message-${message.role}`}
+              data-message-id={message.id || ""}
+              data-testid={`message-${message.role}`}
+              role="article"
+            >
               <div>
-                {message.content[0].reasoning ? (
+                {message.content[0]?.reasoning ? (
                   <ChainOfThought>
                     <ChainOfThoughtHeader>
                       Chain of Thought
                     </ChainOfThoughtHeader>
                     <ChainOfThoughtContent>
                       {reasoningSummary ? (
-                        <ChainOfThoughtSummary reasoningSummary={reasoningSummary} />
+                        <ChainOfThoughtSummary
+                          reasoningSummary={reasoningSummary}
+                        />
                       ) : (
                         <div>{message.content[0].reasoning as string}</div>
                       )}
                     </ChainOfThoughtContent>
                   </ChainOfThought>
                 ) : null}
-                <Response>{message.content[0].text as string}</Response>
-                {message.content[0].annotations
+                {message.content.map((content, index) => (
+                  <Response key={index}>{content.text as string}</Response>
+                ))}
+                {message.content[0]?.annotations && (
+                  <Annotations annotations={message.content[0].annotations} />
+                )}
+                {message.content[0]?.annotations
                   ?.filter(
                     (a) =>
                       a.type === "container_file_citation" &&

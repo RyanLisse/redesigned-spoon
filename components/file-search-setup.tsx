@@ -1,6 +1,6 @@
 "use client";
 import { CircleX } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import FileUpload from "@/components/file-upload";
 import useToolsStore from "@/stores/useToolsStore";
 import { Input } from "./ui/input";
@@ -28,7 +28,6 @@ export default function FileSearchSetup() {
         `/api/vector_stores/retrieve_store?vector_store_id=${storeId}`
       ).then((res) => res.json());
       if (newStore.id) {
-        console.log("Retrieved store:", newStore);
         setVectorStore(newStore);
       } else {
         alert("Vector store not found");

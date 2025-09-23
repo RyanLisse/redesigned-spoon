@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import type { McpApprovalRequestItem } from "@/lib/assistant";
 import { Button } from "./ui/button";
 
-interface Props {
+type Props = {
   item: McpApprovalRequestItem;
   onRespond: (approve: boolean, id: string) => void;
-}
+};
 
 export default function McpApproval({ item, onRespond }: Props) {
   const [disabled, setDisabled] = useState(false);

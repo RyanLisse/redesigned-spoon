@@ -1,6 +1,6 @@
 "use client";
 import { CircleX, FilePlus2, Plus, Trash2 } from "lucide-react";
-import React, { type FormEvent, useCallback, useState } from "react";
+import { type FormEvent, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   Dialog,
@@ -19,12 +19,12 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 
-interface FileUploadProps {
+type FileUploadProps = {
   vectorStoreId?: string;
   vectorStoreName?: string;
   onAddStore: (id: string) => void;
   onUnlinkStore: () => void;
-}
+};
 
 export default function FileUpload({
   vectorStoreId,
@@ -121,7 +121,6 @@ export default function FileUpload({
       if (!fileId) {
         throw new Error("Error getting file ID");
       }
-      console.log("Uploaded file:", uploadData);
 
       let finalVectorStoreId = vectorStoreId;
 
@@ -159,12 +158,10 @@ export default function FileUpload({
       if (!addFileResponse.ok) {
         throw new Error("Error adding file to vector store");
       }
-      const addFileData = await addFileResponse.json();
-      console.log("Added file to vector store:", addFileData);
+      const _addFileData = await addFileResponse.json();
       setFile(null);
       setDialogOpen(false);
-    } catch (error) {
-      console.error("Error during file upload process:", error);
+    } catch (_error) {
       alert("There was an error processing your file. Please try again.");
     } finally {
       setUploading(false);

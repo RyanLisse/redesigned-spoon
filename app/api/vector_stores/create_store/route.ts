@@ -9,8 +9,7 @@ export async function POST(request: Request) {
       name,
     });
     return new Response(JSON.stringify(vectorStore), { status: 200 });
-  } catch (error) {
-    console.error("Error creating vector store:", error);
+  } catch (_error) {
     return new Response("Error creating vector store", { status: 500 });
   }
 }

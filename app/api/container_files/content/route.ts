@@ -14,10 +14,13 @@ export async function GET(request: Request) {
       : `https://api.openai.com/v1/container-files/${fileId}/content`;
     const res = await fetch(url, {
       headers: {
+        // biome-ignore lint/style/useNamingConvention: HTTP Authorization header standard
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
     });
-    if (!res.ok) throw new Error(`Failed to fetch file: ${res.status}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch file: ${res.status}`);
+    }
     const blob = await res.blob();
     return new Response(blob, {
       headers: {
@@ -26,8 +29,7 @@ export async function GET(request: Request) {
         "Content-Disposition": `attachment; filename=${filename ?? fileId}`,
       },
     });
-  } catch (err) {
-    console.error("Error fetching container file", err);
+  } catch (_err) {
     return new Response(JSON.stringify({ error: "Failed to fetch file" }), {
       status: 500,
     });

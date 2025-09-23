@@ -16,7 +16,19 @@ const AnnotationPill = ({ annotation }: { annotation: Annotation }) => {
 
   switch (annotation.type) {
     case "file_citation":
-      return <span className={className}>{annotation.filename}</span>;
+      return (
+        <a
+          className={`${className} flex cursor-pointer items-center gap-1 hover:bg-gray-200`}
+          download
+          href={`/api/container_files/content?file_id=${annotation.fileId}${annotation.filename ? `&filename=${encodeURIComponent(annotation.filename)}` : ""}`}
+          title={`Download ${annotation.filename || annotation.fileId}`}
+        >
+          <span className="truncate">
+            {annotation.filename || annotation.fileId}
+          </span>
+          <ExternalLinkIcon className="shrink-0" size={12} />
+        </a>
+      );
     case "url_citation":
       return (
         <a

@@ -5,27 +5,27 @@
  * Usage: node scripts/upload-docs.js
  */
 
-import fs from 'fs';
-import path from 'path';
-import OpenAI from 'openai';
+import fs from "node:fs";
+import path from "node:path";
+import OpenAi from "openai";
 
 // Initialize OpenAI client
-const openai = new OpenAI();
+const openai = new OpenAi();
 
 // Vectorstore ID from environment
 const VECTORSTORE_ID = process.env.OPENAI_VECTORSTORE_ID;
 
 if (!VECTORSTORE_ID) {
-  console.error('❌ OPENAI_VECTORSTORE_ID not found in environment variables');
+  console.error("❌ OPENAI_VECTORSTORE_ID not found in environment variables");
   process.exit(1);
 }
 
 // Files to upload
 const DOC_FILES = [
-  'README.md',
-  'AGENTS.md',
-  'ai_docs/ai_sdk_docs.md',
-  'docs/browser-echo.md',
+  "README.md",
+  "AGENTS.md",
+  "ai_docs/ai_sdk_docs.md",
+  "docs/browser-echo.md",
 ];
 
 async function uploadFile(filePath, fileName) {
@@ -33,17 +33,17 @@ async function uploadFile(filePath, fileName) {
     console.log(`📤 Uploading ${fileName}...`);
 
     // Read file content
-    const content = fs.readFileSync(filePath, 'utf8');
+    const content = fs.readFileSync(filePath, "utf8");
 
     // Create file blob
     const fileBlob = new Blob([content], {
-      type: 'text/markdown',
+      type: "text/markdown",
     });
 
     // Upload to OpenAI
     const file = await openai.files.create({
       file: new File([fileBlob], fileName),
-      purpose: 'assistants',
+      purpose: "assistants",
     });
 
     console.log(`✅ Uploaded ${fileName} with ID: ${file.id}`);
@@ -71,7 +71,7 @@ async function addFileToVectorStore(fileId, fileName) {
 }
 
 async function main() {
-  console.log('🚀 Starting documentation upload to vectorstore...');
+  console.log("🚀 Starting documentation upload to vectorstore...");
   console.log(`📁 Vectorstore ID: ${VECTORSTORE_ID}`);
 
   const uploadedFiles = [];
@@ -88,7 +88,9 @@ async function main() {
 
     // Upload file
     const fileId = await uploadFile(fullPath, fileName);
-    if (!fileId) continue;
+    if (!fileId) {
+      continue;
+    }
 
     // Add to vectorstore
     const result = await addFileToVectorStore(fileId, fileName);
@@ -97,18 +99,22 @@ async function main() {
     }
 
     // Small delay to avoid rate limits
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
-  console.log('\n📊 Upload Summary:');
+  console.log("\n📊 Upload Summary:");
   console.log(`✅ Successfully uploaded ${uploadedFiles.length} files`);
   uploadedFiles.forEach(({ fileName, fileId }) => {
     console.log(`   • ${fileName} (${fileId})`);
   });
 
   if (uploadedFiles.length > 0) {
-    console.log('\n🎉 Vectorstore is now populated with project documentation!');
-    console.log('💡 You can now ask questions about the project and get relevant answers.');
+    console.log(
+      "\n🎉 Vectorstore is now populated with project documentation!"
+    );
+    console.log(
+      "💡 You can now ask questions about the project and get relevant answers."
+    );
   }
 }
 

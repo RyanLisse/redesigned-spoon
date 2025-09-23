@@ -1,17 +1,63 @@
-# Project Context
-Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Biome's lightning-fast formatter and linter.
+# Agent Documentation
 
-## Key Principles
-- Zero configuration required
-- Subsecond performance
-- Maximum type safety
-- AI-friendly code generation
+## Project Overview
 
-## Before Writing Code
+This is a Next.js 15 chat application with OpenAI Assistant integration, built with TypeScript, React 19, and focused on file search capabilities. The project uses Vitest for testing, pnpm for package management, and Ultracite for code quality enforcement.
+
+## Key Technologies
+- **Framework**: Next.js 15 with App Router
+- **Runtime**: React 19
+- **Language**: TypeScript
+- **Package Manager**: pnpm
+- **Testing Framework**: Vitest (migrated from Jest)
+- **Code Quality**: Biome + Ultracite
+- **AI Integration**: OpenAI SDK with Assistants API
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **UI Components**: Radix UI
+
+## Core Features
+- OpenAI Assistant chat interface
+- File search functionality using vector stores
+- MCP (Model Context Protocol) tool integration
+- Real-time conversation streaming
+- File upload and management
+- Tool calling and function execution
+
+## Development Workflow
+
+### Package Management
+**Use pnpm exclusively** - do not use npm or yarn:
+```bash
+pnpm install           # Install dependencies
+pnpm add <package>     # Add new dependency
+pnpm dev              # Start development server
+pnpm build            # Build for production
+pnpm test             # Run tests with Vitest
+```
+
+### Testing with Vitest
+**Migration from Jest to Vitest completed** - all test commands now use Vitest:
+```bash
+pnpm test             # Run all tests once
+pnpm test:run         # Same as above (alias)
+pnpm test:watch       # Run tests in watch mode
+pnpm test:coverage    # Run tests with coverage report
+```
+
+### Code Quality
+```bash
+npx ultracite fix     # Format and fix code
+npx ultracite check   # Check for issues
+```
+
+### Before Writing Code
 1. Analyze existing patterns in the codebase
 2. Consider edge cases and error scenarios
 3. Follow the rules below strictly
 4. Validate accessibility requirements
+5. Write tests using Vitest syntax
+6. Use pnpm for all package operations
 
 ## Rules
 
@@ -58,7 +104,7 @@ Ultracite enforces strict type safety, accessibility standards, and consistent c
 - Don't use the comma operator.
 - Don't use empty type parameters in type aliases and interfaces.
 - Don't write functions that exceed a given Cognitive Complexity score.
-- Don't nest describe() blocks too deeply in test files.
+- Don't nest describe() blocks too deeply in test files (Vitest recommendation: max 3 levels).
 - Don't use unnecessary boolean casts.
 - Don't use unnecessary callbacks with flatMap.
 - Use for...of statements instead of Array.forEach.
@@ -205,7 +251,7 @@ Ultracite enforces strict type safety, accessibility standards, and consistent c
 
 ### Style and Consistency
 - Don't use global `eval()`.
-- Don't use callbacks in asynchronous tests and hooks.
+- Don't use callbacks in asynchronous tests and hooks (use async/await with Vitest).
 - Don't use negation in `if` statements that have `else` clauses.
 - Don't use nested ternary expressions.
 - Don't reassign function parameters.
@@ -296,16 +342,196 @@ Ultracite enforces strict type safety, accessibility standards, and consistent c
 - Don't import next/document outside of pages/_document.jsx in Next.js projects.
 - Don't use the next/head module in pages/_document.js on Next.js projects.
 
-### Testing Best Practices
-- Don't use export or module.exports in test files.
-- Don't use focused tests.
-- Make sure the assertion function, like expect, is placed inside an it() function call.
-- Don't use disabled tests.
+### Testing Best Practices (Vitest)
+- Don't use export or module.exports in test files
+- Don't use focused tests (test.only, describe.only)
+- Make sure the assertion function, like expect, is placed inside an it() function call
+- Don't use disabled tests (test.skip should be used sparingly)
+- Use Vitest's modern features: concurrent tests, test.each, etc.
+- Prefer async/await over callbacks in tests
+- Use proper cleanup in tests (afterEach, afterAll)
+- Mock external dependencies with vi.mock()
+- Use Vitest's built-in coverage tools
+- Follow testing-library best practices for React components
+
+## Project Architecture
+
+### Directory Structure
+```
+├── app/                     # Next.js 15 App Router
+│   ├── api/                # API routes
+│   │   ├── container_files/ # File container management
+│   │   ├── turn_response/  # Chat turn handling
+│   │   └── vector_stores/  # File search implementation
+│   │       ├── add_file/   # Add files to vector store
+│   │       ├── create_store/ # Create new vector store
+│   │       ├── list_files/ # List vector store files
+│   │       ├── retrieve_store/ # Get vector store info
+│   │       └── upload_file/ # Upload files to vector store
+│   ├── globals.css         # Global styles
+│   └── page.tsx           # Main chat interface
+├── components/             # React components
+│   ├── ai-elements/       # AI-specific UI components
+│   ├── ui/                # Reusable UI components
+│   ├── assistant.tsx      # Main assistant component
+│   ├── chat.tsx          # Chat interface
+│   ├── file-search-setup.tsx # File search configuration
+│   ├── file-upload.tsx   # File upload component
+│   └── message.tsx       # Message display component
+├── config/                # Configuration files
+│   ├── constants.ts       # App constants
+│   ├── functions.ts       # Function definitions
+│   └── tools-list.ts     # Available tools configuration
+├── lib/                   # Utility functions
+│   ├── tools/            # Tool handling logic
+│   ├── assistant.ts      # Assistant interaction logic
+│   ├── reasoning-parser.ts # Response parsing
+│   └── session.ts        # Session management
+├── stores/                # Zustand state stores
+│   ├── useConversationStore.ts # Chat state
+│   ├── useToolsStore.ts  # Tools state
+│   └── use-ui-store.ts   # UI state
+└── types/                 # TypeScript type definitions
+```
+
+### File Search Implementation
+
+The application implements OpenAI's file search functionality through vector stores:
+
+#### Vector Store API Endpoints
+- `POST /api/vector_stores/create_store` - Create new vector store
+- `POST /api/vector_stores/upload_file` - Upload files to vector store
+- `GET /api/vector_stores/list_files` - List files in vector store
+- `POST /api/vector_stores/add_file` - Add existing file to vector store
+- `GET /api/vector_stores/retrieve_store` - Get vector store information
+
+#### Key Components
+- **file-search-setup.tsx**: Configure vector stores and file uploads
+- **file-upload.tsx**: Handle file upload UI and logic
+- **assistant.ts**: Main assistant logic with file search integration
+
+### OpenAI SDK Integration
+
+The project uses OpenAI SDK v5 with:
+- **Assistants API**: For persistent chat sessions
+- **Vector Stores**: For file search capabilities
+- **Streaming**: Real-time response streaming
+- **Tool Calling**: Function and MCP tool integration
+
+#### Assistant Configuration
+```typescript
+// Example assistant setup
+const assistant = await openai.beta.assistants.create({
+  model: "gpt-4o-mini", // Default model (configurable)
+  tools: [{ type: "file_search" }], // Always includes file search
+  // Additional tools added dynamically
+});
+```
+
+### State Management
+
+Using Zustand for state management:
+- **useConversationStore**: Chat messages, assistant state
+- **useToolsStore**: Available tools, MCP configuration
+- **use-ui-store**: UI state, loading indicators
+
+## Testing Framework: Vitest
+
+### Migration from Jest
+The project has been migrated from Jest to Vitest for better performance and native ES modules support.
+
+### Test Configuration
+Vitest uses the package.json scripts for configuration. Key testing patterns:
+
+#### Test File Structure
+```
+<component-dir>/
+  __tests__/
+    component.test.ts(x)
+```
+
+#### Writing Tests
+```typescript
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import Component from '../Component'
+
+describe('Component', () => {
+  it('should render correctly', () => {
+    render(<Component />)
+    expect(screen.getByText('Hello')).toBeInTheDocument()
+  })
+})
+```
+
+### Testing Commands
+```bash
+pnpm test             # Run all tests
+pnpm test:watch       # Watch mode for development
+pnpm test:coverage    # Generate coverage report
+```
+
+### Test Setup
+- **Environment**: jsdom for browser-like testing
+- **Testing Library**: React Testing Library for component tests
+- **Assertions**: Vitest's built-in assertions + jest-dom matchers
+
+## Agent-Specific Guidelines
+
+### For Frontend Development
+- Use React 19 features (use hook, concurrent features)
+- Follow Radix UI patterns for accessible components
+- Implement proper loading and error states
+- Use Tailwind CSS for styling
+- Test components with React Testing Library + Vitest
+
+### For API Development
+- Use Next.js 15 App Router API routes
+- Implement proper error handling and status codes
+- Validate input data with Zod schemas
+- Test API endpoints with Vitest
+- Follow RESTful conventions
+
+### For File Search Features
+- Use OpenAI vector stores for file indexing
+- Implement proper file upload validation
+- Handle file processing asynchronously
+- Test file operations thoroughly
+- Consider file size and type limitations
+
+### For Testing
+- Write tests for all new components and functions
+- Use Vitest's modern testing features
+- Mock external dependencies appropriately
+- Maintain good test coverage (current thresholds in config)
+- Test both happy path and error scenarios
 
 ## Common Tasks
-- `npx ultracite init` - Initialize Ultracite in your project
-- `npx ultracite fix` - Format and fix code automatically
-- `npx ultracite check` - Check for issues without fixing
+
+### Development
+```bash
+pnpm dev              # Start development server
+pnpm build            # Build for production
+pnpm start            # Start production server
+pnpm lint             # Run ESLint
+pnpm type-check       # TypeScript type checking
+```
+
+### Code Quality
+```bash
+npx ultracite init    # Initialize Ultracite
+npx ultracite fix     # Format and fix code
+npx ultracite check   # Check for issues
+```
+
+### File Management
+```bash
+# Upload project documentation to vector store
+node scripts/upload-docs.js
+
+# Check vector store status
+node scripts/check-vectorstore.js
+```
 
 ## Example: Error Handling
 ```typescript

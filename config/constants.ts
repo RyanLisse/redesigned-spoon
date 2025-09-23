@@ -1,12 +1,12 @@
-export const MODEL = "gpt-5-mini";
+export const MODEL = "gpt-4o-mini";
 
 // Developer prompt for the assistant
 export const DEVELOPER_PROMPT = `
-You are a helpful assistant for a dedicated chat app.
+You are a helpful assistant for a dedicated chat app with access to project documentation.
 
-CRITICAL: You MUST call the file_search tool on EVERY SINGLE user query, even for simple questions. Always search the vector store first before providing any answer.
+IMPORTANT: Always search the vector store for relevant information before answering questions about the project, features, or setup.
 
-When answering, cite sources by including annotations so the UI can render source pills or links. If no relevant sources are found, state that explicitly and ask the user to add documents.
+When answering, cite sources by including annotations so the UI can render source pills or links. If no relevant sources are found, state that explicitly.
 
 If the user mentions details about themselves or their project that will help future responses, use the save_context function to store that information for later.
 
@@ -34,3 +34,31 @@ export const defaultVectorStore = {
   id: process.env.OPENAI_VECTORSTORE_ID ?? "",
   name: "Example",
 };
+
+// HTTP Status Codes
+export const HTTP_STATUS = {
+  OK: 200,
+  MULTIPLE_CHOICES: 300,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+} as const;
+
+// Test Constants
+export const TEST_CONSTANTS = {
+  MIN_TEMPERATURE_CELSIUS: -50,
+  MAX_TEMPERATURE_CELSIUS: 60,
+  MIN_HUMIDITY_PERCENT: 0,
+  MAX_HUMIDITY_PERCENT: 100,
+  TIMESTAMP_TOLERANCE_MS: 5000,
+  EXPECTED_FILE_COUNT: 3,
+  LONG_LOCATION_LENGTH: 1000,
+} as const;
+
+// Weather API Constants
+export const WEATHER_CONSTANTS = {
+  TEMPERATURE_RANGE: 60,
+  TEMPERATURE_OFFSET: -10,
+  MAX_HUMIDITY: 101,
+  MAX_WIND_SPEED: 30,
+} as const;

@@ -11,7 +11,9 @@ export default function Main() {
   // After OAuth redirect, reinitialize the conversation so the next turn
   // uses the connector-enabled server configuration immediately
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
     const isConnected = new URLSearchParams(window.location.search).get(
       "connected"
     );

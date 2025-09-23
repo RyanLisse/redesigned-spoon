@@ -21,15 +21,15 @@ export type McpConfig = {
   skip_approval: boolean;
 };
 
-export interface ToolsState {
+export type ToolsState = {
   fileSearchEnabled: boolean;
   functionsEnabled: boolean;
   vectorStore: VectorStore;
   mcpEnabled: boolean;
   mcpConfig: McpConfig;
-}
+};
 
-interface StoreState {
+type StoreState = {
   fileSearchEnabled: boolean;
   //previousFileSearchEnabled: boolean;
   setFileSearchEnabled: (enabled: boolean) => void;
@@ -42,7 +42,7 @@ interface StoreState {
   setMcpEnabled: (enabled: boolean) => void;
   mcpConfig: McpConfig;
   setMcpConfig: (config: McpConfig) => void;
-}
+};
 
 const useToolsStore = create<StoreState>()(
   persist(

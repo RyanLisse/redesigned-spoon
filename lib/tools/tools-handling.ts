@@ -1,11 +1,11 @@
-import { functionsMap } from "../../config/functions";
+import { type FunctionHandler, functionsMap } from "../../config/functions";
 
 type ToolName = keyof typeof functionsMap;
 
 export const handleTool = async (toolName: ToolName, parameters: any) => {
-  console.log("Handle tool", toolName, parameters);
-  if (functionsMap[toolName]) {
-    return await functionsMap[toolName](parameters);
+  const handler: FunctionHandler | undefined = functionsMap[toolName];
+  if (handler) {
+    return await handler(parameters);
   }
   throw new Error(`Unknown tool: ${toolName}`);
 };

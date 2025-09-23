@@ -1,11 +1,11 @@
 "use client";
 import { ChevronRight, Code } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import type { McpListToolsItem } from "@/lib/assistant";
 
-interface Props {
+type Props = {
   item: McpListToolsItem;
-}
+};
 
 export default function McpToolsList({ item }: Props) {
   function ToolDescription({ description }: { description: string }) {

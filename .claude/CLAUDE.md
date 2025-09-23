@@ -1,17 +1,28 @@
 # Project Context
-Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Biome's lightning-fast formatter and linter.
+Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Biome's lightning-fast formatter and linter. This project uses pnpm as the package manager and Vitest for testing.
 
 ## Key Principles
 - Zero configuration required
 - Subsecond performance
 - Maximum type safety
 - AI-friendly code generation
+- Fast, reliable testing with Vitest
+- Efficient dependency management with pnpm
+- Enhanced file search functionality for documentation
+
+## Development Environment
+- **Package Manager**: pnpm (fast, disk-efficient)
+- **Testing Framework**: Vitest (fast, modern, ESM-first)
+- **Linting/Formatting**: Biome + Ultracite
+- **File Search**: Advanced vector store implementation for project documentation
 
 ## Before Writing Code
 1. Analyze existing patterns in the codebase
 2. Consider edge cases and error scenarios
 3. Follow the rules below strictly
 4. Validate accessibility requirements
+5. Write comprehensive tests with Vitest
+6. Use pnpm for all package operations
 
 ## Rules
 
@@ -296,18 +307,102 @@ Ultracite enforces strict type safety, accessibility standards, and consistent c
 - Don't import next/document outside of pages/_document.jsx in Next.js projects.
 - Don't use the next/head module in pages/_document.js on Next.js projects.
 
-### Testing Best Practices
+### Testing Best Practices (Vitest)
 - Don't use export or module.exports in test files.
-- Don't use focused tests.
-- Make sure the assertion function, like expect, is placed inside an it() function call.
-- Don't use disabled tests.
+- Don't use focused tests (test.only, describe.only).
+- Make sure the assertion function, like expect, is placed inside an it() or test() function call.
+- Don't use disabled tests (test.skip, describe.skip) in production code.
+- Use Vitest's built-in assertions and matchers for better error messages.
+- Leverage Vitest's fast watch mode during development.
+- Use describe blocks to group related tests logically.
+- Write descriptive test names that explain the expected behavior.
+- Use beforeEach/afterEach for test setup and cleanup.
+- Prefer async/await over promise chains in tests.
+- Use Vitest's snapshot testing for UI components and complex objects.
+- Mock external dependencies properly using vi.mock().
+- Test error conditions and edge cases, not just happy paths.
+- Use Vitest's concurrent testing for independent test suites.
+- Leverage Vitest's TypeScript support for better type safety in tests.
 
-## Common Tasks
-- `npx ultracite init` - Initialize Ultracite in your project
-- `npx ultracite fix` - Format and fix code automatically
-- `npx ultracite check` - Check for issues without fixing
+## Package Management (pnpm)
+### Installation Commands
+- `pnpm install` - Install all dependencies
+- `pnpm add <package>` - Add a new dependency
+- `pnpm add -D <package>` - Add a new dev dependency
+- `pnpm remove <package>` - Remove a dependency
+- `pnpm update` - Update all dependencies
+- `pnpm outdated` - Check for outdated packages
 
-## Example: Error Handling
+### pnpm Best Practices
+- Use `pnpm dlx` instead of `npx` for one-time package execution
+- Leverage pnpm's workspace features for monorepos
+- Use `.pnpmrc` for project-specific configuration
+- Take advantage of pnpm's faster installation and disk efficiency
+- Use `pnpm why <package>` to understand dependency trees
+- Prefer exact versions in package.json for reproducible builds
+
+## Testing Workflow (Vitest)
+### Test Commands
+- `pnpm test` - Run all tests once
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm test:coverage` - Run tests with coverage report
+- `pnpm test:ui` - Run tests with Vitest UI (if configured)
+- `pnpm test <pattern>` - Run specific test files matching pattern
+
+### Vitest Configuration
+- Use `vitest.config.ts` for project-specific test configuration
+- Configure path aliases to match your project structure
+- Set up proper test environments (jsdom for React components)
+- Configure coverage thresholds to maintain code quality
+- Use Vitest workspace for monorepo testing
+
+### Test File Organization
+```
+__tests__/
+├── unit/           # Unit tests
+├── integration/    # Integration tests
+├── components/     # Component tests
+└── utils/          # Utility function tests
+
+# Or co-located with source files:
+src/
+├── components/
+│   ├── Button.tsx
+│   └── Button.test.tsx
+```
+
+## File Search Implementation
+This project includes an advanced file search system using vector stores:
+
+### Key Features
+- **Document Upload**: Automatically processes and indexes project documentation
+- **Semantic Search**: Uses vector embeddings for intelligent content discovery
+- **Context-Aware**: Provides relevant documentation based on current conversation
+- **File Management**: Tracks uploaded files and their metadata
+
+### Usage in Development
+- All project documentation is automatically indexed
+- Use the file search tool to find relevant code patterns and examples
+- Documentation updates are reflected in search results
+- Supports markdown, code files, and configuration files
+
+## Quality Assurance
+### Code Formatting and Linting
+- `pnpm dlx ultracite init` - Initialize Ultracite in your project
+- `pnpm dlx ultracite fix` - Format and fix code automatically
+- `pnpm dlx ultracite check` - Check for issues without fixing
+- Use Biome for fast, consistent code formatting
+- Configure pre-commit hooks with lefthook for automatic quality checks
+
+### Coverage Requirements
+- Maintain minimum 80% code coverage for new features
+- Focus on testing critical business logic and user interactions
+- Use coverage reports to identify untested code paths
+- Exclude configuration files and type definitions from coverage
+
+## Development Examples
+
+### Error Handling
 ```typescript
 // ✅ Good: Comprehensive error handling
 try {
@@ -325,3 +420,215 @@ try {
   console.log(e);
 }
 ```
+
+### Vitest Testing Examples
+```typescript
+// ✅ Good: Comprehensive component test
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from './Button';
+
+describe('Button Component', () => {
+  const mockClick = vi.fn();
+
+  beforeEach(() => {
+    mockClick.mockClear();
+  });
+
+  it('renders with correct text', () => {
+    render(<Button onClick={mockClick}>Click me</Button>);
+    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+  });
+
+  it('calls onClick handler when clicked', async () => {
+    render(<Button onClick={mockClick}>Click me</Button>);
+
+    await fireEvent.click(screen.getByRole('button'));
+
+    expect(mockClick).toHaveBeenCalledOnce();
+  });
+
+  it('is disabled when loading', () => {
+    render(<Button onClick={mockClick} isLoading>Loading</Button>);
+
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+});
+
+// ✅ Good: API function test with mocking
+import { describe, it, expect, vi } from 'vitest';
+import { fetchUserData } from './api';
+
+// Mock fetch globally
+global.fetch = vi.fn();
+
+describe('fetchUserData', () => {
+  it('returns user data on successful response', async () => {
+    const mockUser = { id: 1, name: 'John Doe' };
+
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockUser,
+    } as Response);
+
+    const result = await fetchUserData(1);
+
+    expect(result).toEqual({ success: true, data: mockUser });
+    expect(fetch).toHaveBeenCalledWith('/api/users/1');
+  });
+
+  it('handles error responses', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+    } as Response);
+
+    const result = await fetchUserData(999);
+
+    expect(result).toEqual({
+      success: false,
+      error: 'User not found'
+    });
+  });
+});
+```
+
+### pnpm Workflow Examples
+```bash
+# ✅ Good: Project setup workflow
+pnpm install                    # Install dependencies
+pnpm dlx ultracite fix         # Format code
+pnpm test                      # Run tests
+pnpm test:coverage             # Check coverage
+pnpm build                     # Build for production
+
+# ✅ Good: Development workflow
+pnpm dev                       # Start development server
+pnpm test:watch               # Run tests in watch mode
+pnpm dlx ultracite check      # Check code quality
+
+# ✅ Good: Package management
+pnpm add react-query          # Add production dependency
+pnpm add -D @types/node       # Add dev dependency
+pnpm why react                # Check why package is installed
+pnpm outdated                 # Check for updates
+```
+
+### File Search Integration
+```typescript
+// ✅ Good: Using file search results in development
+// When implementing new features, search existing patterns:
+// 1. Search for similar component implementations
+// 2. Find configuration examples
+// 3. Locate test patterns
+// 4. Reference documentation
+
+// Example: Finding authentication patterns
+// Search: "authentication", "auth", "login"
+// Results help understand existing auth flow
+```
+
+### Type Safety Examples
+```typescript
+// ✅ Good: Comprehensive type definitions
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  timestamp: string;
+}
+
+interface User {
+  readonly id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'user' | 'moderator';
+}
+
+// ✅ Good: Type-safe API function
+async function fetchUser(id: number): Promise<ApiResponse<User>> {
+  try {
+    const response = await fetch(`/api/users/${id}`);
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `HTTP ${response.status}: ${response.statusText}`,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    const user = await response.json() as User;
+
+    return {
+      success: true,
+      data: user,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+// ❌ Bad: Loose typing
+async function fetchUser(id: any): Promise<any> {
+  const response = await fetch(`/api/users/${id}`);
+  return response.json();
+}
+```
+
+## Project-Specific Guidelines
+
+### Development Workflow
+1. **Setup**: Use `pnpm install` for dependency installation
+2. **Development**: Run `pnpm dev` with `pnpm test:watch` in parallel
+3. **Testing**: Write tests using Vitest before or alongside implementation
+4. **Quality**: Use `pnpm dlx ultracite fix` before committing
+5. **Documentation**: Update relevant docs when adding new features
+6. **File Search**: Leverage the vector store for finding existing patterns
+
+### Pre-commit Checklist
+- [ ] All tests pass (`pnpm test`)
+- [ ] Code coverage meets requirements (`pnpm test:coverage`)
+- [ ] Code is properly formatted (`pnpm dlx ultracite fix`)
+- [ ] TypeScript compiles without errors (`pnpm type-check`)
+- [ ] No accessibility violations in new components
+- [ ] Documentation updated for new features
+
+### Migration Notes (Jest → Vitest)
+When updating existing tests:
+- Replace `jest.fn()` with `vi.fn()`
+- Replace `jest.mock()` with `vi.mock()`
+- Update imports to use Vitest instead of Jest
+- Use Vitest's built-in TypeScript support
+- Leverage Vitest's faster test execution and better ESM support
+
+### File Search Usage
+The enhanced file search functionality provides:
+- **Automatic indexing** of project documentation and code
+- **Semantic search** capabilities for finding relevant examples
+- **Context-aware suggestions** based on current development tasks
+- **Real-time updates** when documentation changes
+
+Use file search to:
+- Find existing component patterns before creating new ones
+- Locate configuration examples for new integrations
+- Discover testing patterns for similar functionality
+- Reference documentation for project-specific conventions
+
+### Performance Optimization
+- **pnpm**: Faster installs, efficient disk usage, better dependency resolution
+- **Vitest**: Faster test execution, better watch mode, instant feedback
+- **Biome**: Lightning-fast formatting and linting
+- **File Search**: Quick access to relevant documentation and examples
+
+### Troubleshooting
+Common issues and solutions:
+- **pnpm install fails**: Clear `node_modules` and `pnpm-lock.yaml`, then reinstall
+- **Vitest tests fail**: Check for Jest dependencies and update imports
+- **Type errors**: Ensure all dependencies have proper type definitions
+- **File search not working**: Verify vector store configuration and API keys

@@ -54,15 +54,15 @@ build:
 	@echo "Building production bundle with $(PKG)..."
 	@$(PKG) run build
 
-# Run tests (using npm for compatibility with vitest)
+# Run tests
 test:
-	@echo "Running tests..."
-	@npm run test:run
+	@echo "Running tests with $(PKG)..."
+	@$(PKG) run test:run
 
 # Run all tests with coverage
 test-all:
-	@echo "Running all tests with coverage..."
-	@npm run test:coverage:ci
+	@echo "Running all tests with coverage with $(PKG)..."
+	@$(PKG) run test:coverage:ci
 
 # Lint code
 lint:
@@ -98,8 +98,8 @@ fix: kill-ports
 
 # Run test suite and fix issues iteratively
 test-fix:
-	@echo "Running tests and fixing issues..."
-	@npm test 2>&1 | tee test-output.log
+	@echo "Running tests and fixing issues with $(PKG)..."
+	@$(PKG) test 2>&1 | tee test-output.log
 	@echo "Test results saved to test-output.log"
 
 # Setup environment (new)

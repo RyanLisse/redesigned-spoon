@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Tool,
   ToolContent,
@@ -8,9 +7,9 @@ import {
 } from "@/components/ai-elements/tool";
 import type { ToolCallItem } from "@/lib/assistant";
 
-interface ToolCallProps {
+type ToolCallProps = {
   toolCall: ToolCallItem;
-}
+};
 
 function mapState(
   status: ToolCallItem["status"]
@@ -30,12 +29,12 @@ function mapState(
 
 export default function ToolCall({ toolCall }: ToolCallProps) {
   const state = mapState(toolCall.status);
-  const typeLabel =
+  const typeLabel: `tool-${string}` =
     toolCall.tool_type === "file_search_call"
-      ? "file_search"
+      ? "tool-file_search"
       : toolCall.tool_type === "mcp_call"
-        ? `mcp:${toolCall.name ?? "tool"}`
-        : `function:${toolCall.name ?? "call"}`;
+        ? `tool-mcp:${toolCall.name ?? "tool"}`
+        : `tool-function:${toolCall.name ?? "call"}`;
 
   return (
     <div className="flex justify-start pt-2">
@@ -47,9 +46,11 @@ export default function ToolCall({ toolCall }: ToolCallProps) {
           ) : null}
           <ToolOutput
             errorText={
-              state === "output-error" ? (toolCall.output ?? null) : null
+              state === "output-error"
+                ? (toolCall.output ?? undefined)
+                : undefined
             }
-            output={toolCall.output ?? null}
+            output={toolCall.output ?? undefined}
           />
         </ToolContent>
       </Tool>

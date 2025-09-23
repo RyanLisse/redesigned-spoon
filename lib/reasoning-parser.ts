@@ -7,11 +7,11 @@ export type ReasoningStep = {
   label: string;
   description: string;
   content: string;
-  status: 'pending' | 'active' | 'complete';
+  status: "pending" | "active" | "complete";
   icon?: string;
   timestamp?: number;
   duration?: number;
-}
+};
 
 export type ReasoningSummary = {
   steps: ReasoningStep[];
@@ -22,10 +22,11 @@ export type ReasoningSummary = {
     mcp: boolean;
   };
   sources?: number;
-}
+};
 
 const REASONING_PATTERNS = {
-  analysis: /(analyzing|analysis|understanding|examining|looking at|considering)/i,
+  analysis:
+    /(analyzing|analysis|understanding|examining|looking at|considering)/i,
   search: /(searching|finding|retrieving|querying|looking for|fetching)/i,
   evaluation: /(evaluating|assessing|comparing|weighing|judging)/i,
   synthesis: /(combining|synthesizing|integrating|connecting|relating)/i,
@@ -40,9 +41,11 @@ const SECONDS_PER_MINUTE = 60;
 /**
  * Parses reasoning text into structured steps based on common AI reasoning patterns
  */
-export function parseReasoningIntoSteps(reasoningText: string): ReasoningStep[] {
+export function parseReasoningIntoSteps(
+  reasoningText: string
+): ReasoningStep[] {
   const steps: ReasoningStep[] = [];
-  const lines = reasoningText.split('\n').filter(line => line.trim());
+  const lines = reasoningText.split("\n").filter((line) => line.trim());
 
   let currentStep: Partial<ReasoningStep> | null = null;
   let stepIndex = 0;
@@ -52,7 +55,7 @@ export function parseReasoningIntoSteps(reasoningText: string): ReasoningStep[] 
 
     // Check if this line indicates a new reasoning step
     let matchedPattern: keyof typeof REASONING_PATTERNS | null = null;
-    let stepLabel = '';
+    let stepLabel = "";
 
     for (const [patternKey, regex] of Object.entries(REASONING_PATTERNS)) {
       if (regex.test(trimmedLine)) {
@@ -68,30 +71,32 @@ export function parseReasoningIntoSteps(reasoningText: string): ReasoningStep[] 
       if (currentStep?.content) {
         steps.push({
           id: `step-${stepIndex++}`,
-          label: currentStep.label || 'Processing',
-          description: currentStep.description || '',
+          label: currentStep.label || "Processing",
+          description: currentStep.description || "",
           content: currentStep.content.trim(),
-          status: 'complete',
+          status: "complete",
           timestamp: Date.now(),
         });
       }
 
       // Start new step
       currentStep = {
-        label: stepLabel || 'Reasoning',
-        description: trimmedLine.length > MAX_DESCRIPTION_LENGTH
-          ? `${trimmedLine.substring(0, MAX_DESCRIPTION_LENGTH)}...`
-          : trimmedLine,
+        label: stepLabel || "Reasoning",
+        description:
+          trimmedLine.length > MAX_DESCRIPTION_LENGTH
+            ? `${trimmedLine.substring(0, MAX_DESCRIPTION_LENGTH)}...`
+            : trimmedLine,
         content: trimmedLine,
-        status: 'active',
+        status: "active",
       };
     } else if (currentStep) {
       // Continue current step
-      currentStep.content = `${currentStep.content || ''}
+      currentStep.content = `${currentStep.content || ""}
 ${trimmedLine}`;
-      currentStep.description = currentStep.content.length > MAX_DESCRIPTION_LENGTH
-        ? `${currentStep.content.substring(0, MAX_DESCRIPTION_LENGTH)}...`
-        : currentStep.content;
+      currentStep.description =
+        currentStep.content.length > MAX_DESCRIPTION_LENGTH
+          ? `${currentStep.content.substring(0, MAX_DESCRIPTION_LENGTH)}...`
+          : currentStep.content;
     }
   }
 
@@ -99,10 +104,10 @@ ${trimmedLine}`;
   if (currentStep?.content) {
     steps.push({
       id: `step-${stepIndex}`,
-      label: currentStep.label || 'Final Step',
-      description: currentStep.description || '',
+      label: currentStep.label || "Final Step",
+      description: currentStep.description || "",
       content: currentStep.content.trim(),
-      status: 'complete',
+      status: "complete",
       timestamp: Date.now(),
     });
   }
@@ -110,11 +115,11 @@ ${trimmedLine}`;
   // If no structured steps were found, create a single comprehensive step
   if (steps.length === 0 && reasoningText.trim()) {
     steps.push({
-      id: 'reasoning-summary',
-      label: 'AI Reasoning',
-      description: 'Complete reasoning process',
+      id: "reasoning-summary",
+      label: "AI Reasoning",
+      description: "Complete reasoning process",
       content: reasoningText.trim(),
-      status: 'complete',
+      status: "complete",
       timestamp: Date.now(),
     });
   }
@@ -141,11 +146,11 @@ export function createReasoningSummary(
 
   if (toolCalls) {
     for (const call of toolCalls) {
-      if (call.tool_type === 'file_search_call') {
+      if (call.tool_type === "file_search_call") {
         toolUsage.fileSearch = true;
-      } else if (call.tool_type === 'function_call' && call.name) {
+      } else if (call.tool_type === "function_call" && call.name) {
         toolUsage.functions.push(call.name);
-      } else if (call.tool_type === 'mcp_call') {
+      } else if (call.tool_type === "mcp_call") {
         toolUsage.mcp = true;
       }
     }

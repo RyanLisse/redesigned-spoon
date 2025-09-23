@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import useToolsStore from "@/stores/useToolsStore";
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";

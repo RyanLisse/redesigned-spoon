@@ -4,9 +4,9 @@
  * Quick script to check vectorstore contents
  */
 
-import OpenAI from 'openai';
+import OpenAi from "openai";
 
-const openai = new OpenAI();
+const openai = new OpenAi();
 const VECTORSTORE_ID = process.env.OPENAI_VECTORSTORE_ID;
 
 async function checkVectorStore() {
@@ -17,15 +17,17 @@ async function checkVectorStore() {
     console.log(`📊 Found ${files.data.length} files:`);
 
     if (files.data.length === 0) {
-      console.log('❌ Vectorstore is empty!');
-      console.log('💡 Run: make upload-docs');
+      console.log("❌ Vectorstore is empty!");
+      console.log("💡 Run: make upload-docs");
     } else {
       files.data.forEach((file, index) => {
-        console.log(`${index + 1}. ${file.filename || 'Unknown'} (${file.id}) - Status: ${file.status}`);
+        console.log(
+          `${index + 1}. ${file.filename || "Unknown"} (${file.id}) - Status: ${file.status}`
+        );
       });
     }
   } catch (error) {
-    console.error('❌ Error checking vectorstore:', error.message);
+    console.error("❌ Error checking vectorstore:", error.message);
   }
 }
 

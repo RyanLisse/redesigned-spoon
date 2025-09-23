@@ -1,9 +1,8 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { create } from "zustand";
-import { INITIAL_MESSAGE } from "@/config/constants";
 import type { Item } from "@/lib/assistant";
 
-interface ConversationState {
+type ConversationState = {
   // Items displayed in the chat
   chatMessages: Item[];
   // Items sent to the Responses API
@@ -18,7 +17,7 @@ interface ConversationState {
   setAssistantLoading: (loading: boolean) => void;
   rawSet: (state: any) => void;
   resetConversation: () => void;
-}
+};
 
 const useConversationStore = create<ConversationState>((set) => ({
   chatMessages: [],

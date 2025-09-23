@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { type Item, processMessages } from "@/lib/assistant";
 import useConversationStore from "@/stores/useConversationStore";
 import Chat from "./chat";
@@ -13,7 +12,9 @@ export default function Assistant() {
   } = useConversationStore();
 
   const handleSendMessage = async (message: string) => {
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      return;
+    }
 
     const userItem: Item = {
       type: "message",
@@ -30,9 +31,7 @@ export default function Assistant() {
       addConversationItem(userMessage);
       addChatMessage(userItem);
       await processMessages();
-    } catch (error) {
-      console.error("Error processing message:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleApprovalResponse = async (approve: boolean, id: string) => {
@@ -44,9 +43,7 @@ export default function Assistant() {
     try {
       addConversationItem(approvalItem);
       await processMessages();
-    } catch (error) {
-      console.error("Error sending approval response:", error);
-    }
+    } catch (_error) {}
   };
 
   return (

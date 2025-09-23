@@ -8,7 +8,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { ComponentProps } from "react";
-import type { ReasoningSummary } from "@/lib/reasoning-parser";
 import { createContext, memo, useContext } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,6 +15,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import type { ReasoningSummary } from "@/lib/reasoning-parser";
 import { cn } from "@/lib/utils";
 
 type ChainOfThoughtContextValue = {
@@ -78,7 +78,12 @@ export type ChainOfThoughtHeaderProps = ComponentProps<
 };
 
 export const ChainOfThoughtHeader = memo(
-  ({ className, children, reasoningSummary, ...props }: ChainOfThoughtHeaderProps) => {
+  ({
+    className,
+    children,
+    reasoningSummary,
+    ...props
+  }: ChainOfThoughtHeaderProps) => {
     const { isOpen, setIsOpen } = useChainOfThought();
 
     return (
@@ -151,7 +156,9 @@ export const ChainOfThoughtStep = memo(
         <div className="flex-1 space-y-2">
           <div>{displayLabel}</div>
           {displayDescription && (
-            <div className="text-muted-foreground text-xs">{displayDescription}</div>
+            <div className="text-muted-foreground text-xs">
+              {displayDescription}
+            </div>
           )}
           {children}
         </div>
@@ -213,37 +220,40 @@ export type ChainOfThoughtSummaryProps = ComponentProps<"div"> & {
 
 export const ChainOfThoughtSummary = memo(
   ({ className, reasoningSummary, ...props }: ChainOfThoughtSummaryProps) => {
-    if (!reasoningSummary) return null;
+    if (!reasoningSummary) {
+      return null;
+    }
 
     return (
       <div className={cn("space-y-4", className)} {...props}>
         {reasoningSummary.steps.map((step) => (
           <ChainOfThoughtStep
+            description={step.description}
             key={step.id}
             label={step.label}
-            description={step.description}
             status={step.status}
           >
             {step.content}
           </ChainOfThoughtStep>
         ))}
         {reasoningSummary.toolUsage && (
-          <div className="flex gap-2 text-sm text-muted-foreground fade-in-0 slide-in-from-top-2 animate-in">
+          <div className="fade-in-0 slide-in-from-top-2 flex animate-in gap-2 text-muted-foreground text-sm">
             <div className="relative mt-0.5">
               <DotIcon className="size-4" />
             </div>
             <div className="flex-1 space-y-2">
               <div>Tool Usage Summary</div>
-              <div className="text-muted-foreground text-xs space-y-1">
+              <div className="space-y-1 text-muted-foreground text-xs">
                 {reasoningSummary.toolUsage.fileSearch && (
                   <div>• File search used</div>
                 )}
                 {reasoningSummary.toolUsage.functions.length > 0 && (
-                  <div>• Functions called: {reasoningSummary.toolUsage.functions.join(', ')}</div>
+                  <div>
+                    • Functions called:{" "}
+                    {reasoningSummary.toolUsage.functions.join(", ")}
+                  </div>
                 )}
-                {reasoningSummary.toolUsage.mcp && (
-                  <div>• MCP tools used</div>
-                )}
+                {reasoningSummary.toolUsage.mcp && <div>• MCP tools used</div>}
               </div>
             </div>
           </div>

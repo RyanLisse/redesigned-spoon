@@ -1,11 +1,11 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 
 const SESSION_COOKIE = "responses_starter_session_id";
 
 // Simple in-memory storage for demo purposes only.
 // In production, replace with a persistent/session store.
-export interface OAuthTokens {
+export type OAuthTokens = {
   access_token?: string;
   refresh_token?: string;
   id_token?: string;
@@ -13,14 +13,16 @@ export interface OAuthTokens {
   scope?: string;
   // epoch milliseconds when the access token expires
   expires_at?: number;
-}
+};
 
 const sessionStore = new Map<string, OAuthTokens>();
 
 export async function getOrCreateSessionId(): Promise<string> {
   const jar = await cookies();
   const existing = jar.get(SESSION_COOKIE)?.value;
-  if (existing) return existing;
+  if (existing) {
+    return existing;
+  }
 
   const sessionId = randomBytes(16).toString("hex");
   // Set httpOnly cookie for session id
@@ -43,11 +45,15 @@ export function saveTokenSet(sessionId: string, tokenSet: OAuthTokens) {
 }
 
 export function getTokenSet(sessionId?: string): OAuthTokens | undefined {
-  if (!sessionId) return;
+  if (!sessionId) {
+    return;
+  }
   return sessionStore.get(sessionId);
 }
 
 export function clearSession(sessionId?: string) {
-  if (!sessionId) return;
+  if (!sessionId) {
+    return;
+  }
   sessionStore.delete(sessionId);
 }
