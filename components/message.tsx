@@ -7,7 +7,7 @@ import {
   ChainOfThoughtSummary,
 } from "@/components/ai-elements/chain-of-thought";
 import { Response } from "@/components/ai-elements/response";
-import type { MessageItem } from "@/lib/assistant";
+import type { MessageItem, ToolCallItem } from "@/lib/assistant";
 import { createReasoningSummary } from "@/lib/reasoning-parser";
 
 // Hoisted regex to avoid recreating it on each render
@@ -16,12 +16,13 @@ const IMAGE_EXT_REGEX = /\.(png|jpg|jpeg|gif|webp|svg)$/i;
 // Prefer `type` over `interface` for simple props shapes
 type MessageProps = {
   message: MessageItem;
+  toolCalls?: ToolCallItem[];
 };
 
-const Message: React.FC<MessageProps> = ({ message }) => {
+const Message: React.FC<MessageProps> = ({ message, toolCalls = [] }) => {
   // Create detailed reasoning summary if reasoning exists
   const reasoningSummary = message.content[0].reasoning
-    ? createReasoningSummary(message.content[0].reasoning)
+    ? createReasoningSummary(message.content[0].reasoning, undefined, toolCalls)
     : null;
 
   return (

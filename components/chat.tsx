@@ -244,6 +244,8 @@ const Chat: React.FC<ChatProps> = ({
     return `${item.type}-i${index}`;
   };
 
+  const allToolCalls = items.filter(item => item.type === 'tool_call') as ToolCallItem[];
+
   const renderConversationItem = (item: Item, index: number): ReactNode => {
     switch (item.type) {
       case "tool_call": {
@@ -252,7 +254,7 @@ const Chat: React.FC<ChatProps> = ({
       case "message": {
         return (
           <div className="flex flex-col gap-1" key={getItemKey(item, index)}>
-            <Message message={item} />
+            <Message message={item} toolCalls={allToolCalls} />
             {item.content?.[0]?.annotations?.length ? (
               <Annotations annotations={item.content[0].annotations} />
             ) : null}
