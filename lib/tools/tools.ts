@@ -30,14 +30,14 @@ export const getTools = (
       function: {
         name: "file_search",
         description:
-          "Search through uploaded files to find relevant information. Use this tool to answer questions based on the uploaded documents.",
+          "REQUIRED: Search through uploaded project documentation. You MUST call this tool FIRST for EVERY user query to retrieve relevant context. This tool searches the vector store containing all project files and documentation.",
         parameters: {
           type: "object",
           properties: {
             query: {
               type: "string",
               description:
-                "The search query to find relevant information in the uploaded files",
+                "The search query - use the user's question or relevant keywords from their query",
             },
             vector_store_id: {
               type: "string",
